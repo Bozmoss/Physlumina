@@ -164,30 +164,25 @@ int main(int argc, char** argv) {
     p.activate();
 
     std::vector<float> res = { (float)mode->width, (float)mode->height, 1.0f };
-    std::vector<std::vector<float>> lights = {
+
+    std::vector<std::vector<float>> lights = { //DEFAULT
         {2.0, 0.6, 1.0},
         {-2.0, 0.6, 1.0},
         {0.0, 0.8, 1.0}
     };
-    std::vector<std::vector<float>> lightCols = {
+
+    std::vector<std::vector<float>> lightCols = { //DEFAULT
         {1.0, 1.0, 1.0},
         {1.0, 1.0, 1.0},
         {1.0, 1.0, 1.0}
     };
 
     materials = {
-        {1.0f, 1.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.2f, 32.0f},
-        {0.0f, 1.0f, 0.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
-        {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.0f, 16.0f},
-        {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
+    {1.0f, 1.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.2f, 32.0f},
+    {0.0f, 1.0f, 0.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
+    {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.0f, 16.0f},
+    {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
     };
-
-    for (int i = 0; i < bound; i++) {
-        int r = rand() % 1000, r2 = rand() % 1000;
-        ObjectData o = { 0, 0, vec {r / 1000.0f, (float)i/5, r2 / 1000.0f}, 0.1, 1.0 };
-        auto s = std::make_shared<Sphere>(o);
-        objects.push_back(s);
-    }
 
     FragVars fvs(res, game.getAX(), game.getAY(), lights, lightCols, materials, objects);
 
@@ -218,53 +213,71 @@ int main(int argc, char** argv) {
     GUI gui(mode->width, mode->height);
 
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glfwPollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
         switch (screen) {
         case 0:
-        {
-            p.activate();
-
-            glfwPollEvents();
-
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-
             gui.mainMenu(screen);
-
-
-            ImGui::Render();
-            int display_w = mode->width, display_h = mode->height;
-            glfwGetFramebufferSize(window, &display_w, &display_h);
-            glViewport(0, 0, display_w, display_h);
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-            glfwSwapBuffers(window);
             break;
-        }
         case 1:
-            p.activate();
-
-            update();
-
             updateObjectDatas();
 
+            p.activate();
             fvs.update(p, game.getAX(), game.getAY(), materials, objects);
+
+            // Clear the screen
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
 
-            glfwSwapBuffers(window);
-
-            glfwPollEvents();
+            gui.screenOne(window, objects);
             break;
         }
+
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        glfwSwapBuffers(window);
     }
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }
+
+
+
+
+/*std::vector<std::vector<float>> lights = {
+    {2.0, 0.6, 1.0},
+    {-2.0, 0.6, 1.0},
+    {0.0, 0.8, 1.0}
+};*/ //PRESET LIGHT POSITIONS
+/*std::vector<std::vector<float>> lightCols = {
+    {1.0, 1.0, 1.0},
+    {1.0, 1.0, 1.0},
+    {1.0, 1.0, 1.0}
+};*/ //PRESET LIGHT COLOURS
+
+/*materials = {
+    {1.0f, 1.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.2f, 32.0f},
+    {0.0f, 1.0f, 0.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
+    {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.0f, 16.0f},
+    {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
+};*/ //PRESET MATERIALS
+
+/*for (int i = 0; i < bound; i++) {
+    int r = rand() % 1000, r2 = rand() % 1000;
+    ObjectData o = { 0, 0, vec {r / 1000.0f, (float)i/5, r2 / 1000.0f}, 0.1, 1.0 };
+    auto s = std::make_shared<Sphere>(o);
+    objects.push_back(s);
+}*/
