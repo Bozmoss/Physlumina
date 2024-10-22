@@ -1,5 +1,7 @@
 #include "object.hpp"
 
+#include <iostream>
+
 Object::Object(ObjectData data):
     data{ data }, 
     lastT{ 0 } {}
@@ -50,6 +52,9 @@ bool Object::isClicked(std::vector<float> ro, std::vector<float> rd, float final
 
 bool Object::checkCollision(Object& other) {
     float dist = vOps.length(vOps.add(data.r, vOps.scale(other.getData()->r, -1)));
+
+    std::cout << dist << std::endl;
+
     return dist < (data.l1 + other.getData()->l1);
 }
 
@@ -63,6 +68,11 @@ void Object::resolveCollision(Object& other) {
     vec impulse = vOps.scale(colNorm, j);
     data.vel = vOps.add(data.vel, vOps.scale(impulse, -1 / data.mass));
     other.getData()->vel = vOps.add(other.getData()->vel, vOps.scale(impulse, 1 / other.getData()->mass));
+
+    float overlap = data.l1 + other.getData()->l1 - vOps.length(vOps.add(data.r, vOps.scale(other.getData()->r, -1)));
+    vec correction = vOps.scale(colNorm, overlap / 2.0f);
+    data.r = vOps.add(data.r, correction);
+    other.getData()->r = vOps.add(other.getData()->r, vOps.scale(correction, -1));
 }
 
 float Object::getLastT() {

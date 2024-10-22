@@ -48,16 +48,20 @@ Game game(objects);
 int screen = 0;
 float g = 0.000075, r = 0.8, f = 0.7;
 const int bound = 10;
-const float gridSize = 1.0f;
+const float gridSize = 1.0/10.0f;
 
 std::pair<int, int> computeHash(const vec& pos) {
     int x = static_cast<int>(pos.x / gridSize);
     int y = static_cast<int>(pos.y / gridSize);
+    std::cout << "Computed Hash Key: (" << x << ", " << y << ")" << std::endl;
     return { x, y };
 }
 
 void mouse(GLFWwindow* window, double xpos, double ypos) {
-    game.mouseEvent(window, xpos, ypos, g, r);
+    ImGuiIO& io = ImGui::GetIO();
+    if (!io.WantCaptureMouse) {
+        game.mouseEvent(window, xpos, ypos, g, r);
+    }
 }
 
 void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -75,18 +79,55 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
     }
 }
 
-void update() {
-    spatialHash.clear();
-    for (auto& o : objects) {
-        o->updateObject(g, r);
-        auto hashKey = computeHash(o->getData()->r);
-        spatialHash[hashKey].push_back(o);
+void printSpatialHash() {
+    for (const auto& pair : spatialHash) {
+        const auto& hashKey = pair.first; // pair.first is the key (x, y)
+        const auto& cellObjects = pair.second; // pair.second is the vector of objects in that cell
+
+        std::cout << "Hash Key: (" << hashKey.first << ", " << hashKey.second << "): ";
+
+        // Print object details
+        for (const auto& obj : cellObjects) {
+            std::cout << "Object at ("
+                << obj->getData()->r.x << ", "
+                << obj->getData()->r.y << ", "
+                << obj->getData()->r.z << ") with radius "
+                << obj->getData()->l1 << " | ";
+        }
+        std::cout << std::endl; // New line after each hash bucket
     }
+}
+
+void update() {
+    for (auto& o : objects) {
+        // Store old hash key based on object's previous position
+        auto oldHashKey = computeHash(o->getData()->r);
+
+        // Update object (apply forces, move object, etc.)
+        o->updateObject(g, r);
+
+        // Compute new hash key based on object's new position
+        auto newHashKey = computeHash(o->getData()->r);
+
+        // Only rehash the object if it has moved to a different grid cell
+        if (oldHashKey != newHashKey) {
+            // Remove object from the old cell
+            auto& oldCell = spatialHash[oldHashKey];
+            oldCell.erase(std::remove(oldCell.begin(), oldCell.end(), o), oldCell.end());
+
+            // Add object to the new cell
+            spatialHash[newHashKey].push_back(o);
+        }
+    }
+
+    printSpatialHash();
+    // Check for collisions in each cell
     for (auto& pair : spatialHash) {
         auto& cellObjects = pair.second;
         for (size_t i = 0; i < cellObjects.size(); i++) {
             for (size_t j = i + 1; j < cellObjects.size(); j++) {
                 if (cellObjects[i]->checkCollision(*cellObjects[j])) {
+                    std::cout << "Collision detected between objects " << i << " and " << j << std::endl;
                     cellObjects[i]->resolveCollision(*cellObjects[j]);
                 }
             }
@@ -223,6 +264,7 @@ int main(int argc, char** argv) {
             gui.mainMenu(screen);
             break;
         case 1:
+            update();
             updateObjectDatas();
 
             p.activate();
