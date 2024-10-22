@@ -44,7 +44,7 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
             SliderFloat("Radius", &r, 0.1, 0.8);
             SliderFloat("Mass", &mass, 0.1, 2);
             if (Button("Create")) {
-                ObjectData o = { 0, m, vec {x,y,z}, r, m };
+                ObjectData o = { 0, m, vec {x,y,z}, r, mass };
                 auto s = std::make_shared<Sphere>(o);
                 objects.push_back(s);
             }

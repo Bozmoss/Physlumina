@@ -29,7 +29,7 @@ struct ObjectData {
     vec r;
     float l1, mass;
     vec vel, angVel;
-    bool down = true, moving = false, floor = false;
+    bool down = true, moving = false, floor = false, firstHash = true;
 };
 
 class Object {

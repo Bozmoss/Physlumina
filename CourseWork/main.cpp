@@ -46,14 +46,13 @@ std::vector<std::shared_ptr<Object>> objects;
 std::unordered_map<std::pair<int, int>, std::vector<std::shared_ptr<Object>>, pair_hash> spatialHash;
 Game game(objects);
 int screen = 0;
-float g = 0.000075, r = 0.8, f = 0.7;
+float g = 0.000075, r = 0.7, f = 0.7;
 const int bound = 10;
-const float gridSize = 1.0/10.0f;
+const float gridSize = 1.0/5.0f;
 
 std::pair<int, int> computeHash(const vec& pos) {
-    int x = static_cast<int>(pos.x / gridSize);
-    int y = static_cast<int>(pos.y / gridSize);
-    std::cout << "Computed Hash Key: (" << x << ", " << y << ")" << std::endl;
+    int x = static_cast<int>((pos.x+1) / gridSize);
+    int y = static_cast<int>((pos.y+1) / gridSize);
     return { x, y };
 }
 
@@ -81,12 +80,11 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
 void printSpatialHash() {
     for (const auto& pair : spatialHash) {
-        const auto& hashKey = pair.first; // pair.first is the key (x, y)
-        const auto& cellObjects = pair.second; // pair.second is the vector of objects in that cell
+        const auto& hashKey = pair.first;
+        const auto& cellObjects = pair.second;
 
         std::cout << "Hash Key: (" << hashKey.first << ", " << hashKey.second << "): ";
 
-        // Print object details
         for (const auto& obj : cellObjects) {
             std::cout << "Object at ("
                 << obj->getData()->r.x << ", "
@@ -94,34 +92,29 @@ void printSpatialHash() {
                 << obj->getData()->r.z << ") with radius "
                 << obj->getData()->l1 << " | ";
         }
-        std::cout << std::endl; // New line after each hash bucket
+        std::cout << std::endl;
     }
 }
 
 void update() {
     for (auto& o : objects) {
-        // Store old hash key based on object's previous position
-        auto oldHashKey = computeHash(o->getData()->r);
-
-        // Update object (apply forces, move object, etc.)
-        o->updateObject(g, r);
-
-        // Compute new hash key based on object's new position
-        auto newHashKey = computeHash(o->getData()->r);
-
-        // Only rehash the object if it has moved to a different grid cell
-        if (oldHashKey != newHashKey) {
-            // Remove object from the old cell
-            auto& oldCell = spatialHash[oldHashKey];
-            oldCell.erase(std::remove(oldCell.begin(), oldCell.end(), o), oldCell.end());
-
-            // Add object to the new cell
-            spatialHash[newHashKey].push_back(o);
+        if (o->getData()->firstHash) {
+            auto key = computeHash(o->getData()->r);
+            spatialHash[key].push_back(o);
+            o->updateObject(g, r);
+            o->getData()->firstHash = false;
+        }
+        else {
+            auto oldHashKey = computeHash(o->getData()->r);
+            o->updateObject(g, r);
+            auto newHashKey = computeHash(o->getData()->r);
+            if (oldHashKey != newHashKey) {
+                auto& oldCell = spatialHash[oldHashKey];
+                oldCell.erase(std::remove(oldCell.begin(), oldCell.end(), o), oldCell.end());
+                spatialHash[newHashKey].push_back(o);
+            }
         }
     }
-
-    printSpatialHash();
-    // Check for collisions in each cell
     for (auto& pair : spatialHash) {
         auto& cellObjects = pair.second;
         for (size_t i = 0; i < cellObjects.size(); i++) {
@@ -157,7 +150,6 @@ int main(int argc, char** argv) {
     }
 
     g = 3*mode->refreshRate / 1000000.0 * bound / 3;
-    r = 3*mode->refreshRate / 330.0;
 
     glfwWindowHint(GLFW_RED_BITS, mode->redBits);
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
@@ -295,31 +287,3 @@ int main(int argc, char** argv) {
     glfwTerminate();
     return 0;
 }
-
-
-
-
-/*std::vector<std::vector<float>> lights = {
-    {2.0, 0.6, 1.0},
-    {-2.0, 0.6, 1.0},
-    {0.0, 0.8, 1.0}
-};*/ //PRESET LIGHT POSITIONS
-/*std::vector<std::vector<float>> lightCols = {
-    {1.0, 1.0, 1.0},
-    {1.0, 1.0, 1.0},
-    {1.0, 1.0, 1.0}
-};*/ //PRESET LIGHT COLOURS
-
-/*materials = {
-    {1.0f, 1.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.2f, 32.0f},
-    {0.0f, 1.0f, 0.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
-    {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.0f, 16.0f},
-    {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
-};*/ //PRESET MATERIALS
-
-/*for (int i = 0; i < bound; i++) {
-    int r = rand() % 1000, r2 = rand() % 1000;
-    ObjectData o = { 0, 0, vec {r / 1000.0f, (float)i/5, r2 / 1000.0f}, 0.1, 1.0 };
-    auto s = std::make_shared<Sphere>(o);
-    objects.push_back(s);
-}*/
