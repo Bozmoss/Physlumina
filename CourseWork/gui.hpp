@@ -12,5 +12,5 @@ private:
 public:
     GUI(int width, int height);
     void mainMenu(int& screen);
-    void screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects);
+    void screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, float fps, float &g);
 };

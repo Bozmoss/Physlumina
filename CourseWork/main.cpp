@@ -45,10 +45,11 @@ std::vector<Material> materials;
 std::vector<std::shared_ptr<Object>> objects;
 std::unordered_map<std::pair<int, int>, std::vector<std::shared_ptr<Object>>, pair_hash> spatialHash;
 Game game(objects);
-int screen = 0;
-float g = 0.000075, r = 0.7, f = 0.7;
+int screen = 0, frameCount = 0;
+double prevTime = 0.0;
+float g, r = 0.7, f = 0.7, fps = 0.0f;
 const int bound = 10;
-const float gridSize = 1.0/5.0f;
+const float gridSize = 1.0/3.0f;
 
 std::pair<int, int> computeHash(const vec& pos) {
     int x = static_cast<int>((pos.x+1) / gridSize);
@@ -97,6 +98,13 @@ void printSpatialHash() {
 }
 
 void update() {
+    double currentTime = glfwGetTime();
+    frameCount++;
+    if (currentTime - prevTime >= 1.0) {
+        fps = frameCount;
+        frameCount = 0;
+        prevTime = currentTime;
+    }
     for (auto& o : objects) {
         if (o->getData()->firstHash) {
             auto key = computeHash(o->getData()->r);
@@ -120,7 +128,6 @@ void update() {
         for (size_t i = 0; i < cellObjects.size(); i++) {
             for (size_t j = i + 1; j < cellObjects.size(); j++) {
                 if (cellObjects[i]->checkCollision(*cellObjects[j])) {
-                    std::cout << "Collision detected between objects " << i << " and " << j << std::endl;
                     cellObjects[i]->resolveCollision(*cellObjects[j]);
                 }
             }
@@ -148,8 +155,6 @@ int main(int argc, char** argv) {
         glfwTerminate();
         return -1;
     }
-
-    g = 3*mode->refreshRate / 1000000.0 * bound / 3;
 
     glfwWindowHint(GLFW_RED_BITS, mode->redBits);
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
@@ -267,7 +272,7 @@ int main(int argc, char** argv) {
 
             glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
 
-            gui.screenOne(window, objects);
+            gui.screenOne(window, objects, fps, g);
             break;
         }
 

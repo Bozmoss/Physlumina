@@ -21,12 +21,24 @@ void GUI::mainMenu(int& screen) {
     End();
 }
 
-void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects) {
-    static bool sphereWindow = false;
+void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, float fps, float &g) {
+    static bool sphereWindow = false, FPS = false, constants = false;
     if (BeginMainMenuBar()) {
         if (BeginMenu("Objects")) {
             if (MenuItem("Sphere")) {
                 sphereWindow = true;
+            }
+            EndMenu();
+        }
+        if (BeginMenu("Global values")) {
+            if (MenuItem("Constants")) {
+                constants = true;
+            }
+            EndMenu();
+        }
+        if (BeginMenu("View")) {
+            if (MenuItem("FPS")) {
+                FPS = true;
             }
             EndMenu();
         }
@@ -48,6 +60,22 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
                 auto s = std::make_shared<Sphere>(o);
                 objects.push_back(s);
             }
+        }
+        End();
+    }
+    if (FPS) {
+        SetNextWindowSize(ImVec2(width / 5.0, height / 5.0));
+        if (Begin("FPS", &FPS)) {
+            Text("Current FPS: %.1f", fps);
+        }
+        End();
+    }
+    if (constants) {
+        SetNextWindowSize(ImVec2(width / 5.0, height / 5.0));
+        static float G = 50.0;
+        if (Begin("Constants", &constants)) {
+            SliderFloat("Gravity", &G, 50.0, 100.0);
+            g = G/1000000;
         }
         End();
     }
