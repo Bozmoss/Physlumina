@@ -21,8 +21,8 @@ void GUI::mainMenu(int& screen) {
     End();
 }
 
-void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, float fps, float &g) {
-    static bool sphereWindow = false, FPS = false, constants = false;
+void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, float fps, float &g, std::vector<std::string> tArr) {
+    static bool sphereWindow = false, FPS = false, constants = false, debug = false;
     if (BeginMainMenuBar()) {
         if (BeginMenu("Objects")) {
             if (MenuItem("Sphere")) {
@@ -39,6 +39,12 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         if (BeginMenu("View")) {
             if (MenuItem("FPS")) {
                 FPS = true;
+            }
+            EndMenu();
+        }
+        if (BeginMenu("Debug")) {
+            if (MenuItem("Open debug menu")) {
+                debug = true;
             }
             EndMenu();
         }
@@ -74,8 +80,18 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         SetNextWindowSize(ImVec2(width / 5.0, height / 5.0));
         static float G = 50.0;
         if (Begin("Constants", &constants)) {
-            SliderFloat("Gravity", &G, 50.0, 100.0);
+            SliderFloat("Gravity", &G, 50.0, 1000.0);
             g = G/1000000;
+        }
+        End();
+    }
+    if (debug) {
+        SetNextWindowSize(ImVec2(width / 5.0, height / 5.0));
+        if (Begin("Debug", &debug)) {
+            for (std::string t : tArr) {
+                Text(t.c_str());
+                Text("\n");
+            }
         }
         End();
     }

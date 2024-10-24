@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <memory>
+#include <string>
 
 class GUI {
 private:
@@ -12,5 +13,5 @@ private:
 public:
     GUI(int width, int height);
     void mainMenu(int& screen);
-    void screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, float fps, float &g);
+    void screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, float fps, float &g, std::vector<std::string> tArr);
 };

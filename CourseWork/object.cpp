@@ -27,7 +27,7 @@ void Object::updateObject(float g, float r) {
             data.vel.y -= g;
             if (data.r.y - data.l1 < -1.5) {
                 data.r.y = -1.5 + data.l1;
-                data.vel.y = -data.vel.y * r;
+                data.vel.y = -data.vel.y * r - r/100.0;
                 if (abs(data.vel.y) < g * 0.25) {
                     data.floor = true;
                 }
@@ -82,16 +82,16 @@ void Object::resolveCollision(Object& other) {
         return; // Handle appropriately
     }
 
-    float overlap = data.l1 + other.getData()->l1 - vOps.length(vOps.add(data.r, vOps.scale(other.getData()->r, -1)));
+    //float overlap = data.l1 + other.getData()->l1 - vOps.length(vOps.add(data.r, vOps.scale(other.getData()->r, -1)));
 
-    if (overlap < 0) {
-        std::cerr << "Warning: Negative overlap detected. No need for correction." << std::endl;
-        return; // No penetration to resolve
-    }
+    //if (overlap < 0) {
+    //    std::cerr << "Warning: Negative overlap detected. No need for correction." << std::endl;
+    //    return; // No penetration to resolve
+    //}
 
-    vec correction = vOps.scale(colNorm, overlap / 2.0f);
-    data.r = vOps.add(data.r, correction);
-    other.getData()->r = vOps.add(other.getData()->r, vOps.scale(correction, -1));
+    //vec correction = vOps.scale(colNorm, overlap / 2.0f);
+    //data.r = vOps.add(data.r, correction);
+    //other.getData()->r = vOps.add(other.getData()->r, vOps.scale(correction, -1));
 }
 
 float Object::getLastT() {

@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <unordered_map>
 #include <functional>
+#include <string>
 
 #include "GLOBAL.hpp"
 #include "filehandler.hpp"
@@ -47,9 +48,10 @@ std::unordered_map<std::pair<int, int>, std::vector<std::shared_ptr<Object>>, pa
 Game game(objects);
 int screen = 0, frameCount = 0;
 double prevTime = 0.0;
-float g, r = 0.7, f = 0.7, fps = 0.0f;
+float g = 0.00005, r = 0.7, f = 0.7, fps = 0.0f;
 const int bound = 10;
-const float gridSize = 1.0/3.0f;
+const float gridSize = 1.0;
+std::vector<std::string> text;
 
 std::pair<int, int> computeHash(const vec& pos) {
     int x = static_cast<int>((pos.x+1) / gridSize);
@@ -79,22 +81,33 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
     }
 }
 
-void printSpatialHash() {
+std::vector<std::string> printSpatialHash() {
+    std::vector<std::string> tArr;
     for (const auto& pair : spatialHash) {
+        std::string t;
         const auto& hashKey = pair.first;
         const auto& cellObjects = pair.second;
 
-        std::cout << "Hash Key: (" << hashKey.first << ", " << hashKey.second << "): ";
+        t += "Hash Key: (" + std::to_string(hashKey.first);
+        t += ", " + std::to_string(hashKey.second);
+        t += "): \n";
 
         for (const auto& obj : cellObjects) {
-            std::cout << "Object at ("
-                << obj->getData()->r.x << ", "
-                << obj->getData()->r.y << ", "
-                << obj->getData()->r.z << ") with radius "
-                << obj->getData()->l1 << " | ";
+            t += "Object at (";
+            t += std::to_string(obj->getData()->r.x);
+            t += ", ";
+            t += std::to_string(obj->getData()->r.y);
+            t += ", ";
+            t += std::to_string(obj->getData()->r.z);
+            t += ") with radius ";
+            t += std::to_string(obj->getData()->l1);
+            t += " | ";
+            t += "\n";
         }
-        std::cout << std::endl;
+        t += "\n";
+        tArr.push_back(t);
     }
+    return tArr;
 }
 
 void update() {
@@ -123,6 +136,7 @@ void update() {
             }
         }
     }
+    text = printSpatialHash();
     for (auto& pair : spatialHash) {
         auto& cellObjects = pair.second;
         for (size_t i = 0; i < cellObjects.size(); i++) {
@@ -272,7 +286,7 @@ int main(int argc, char** argv) {
 
             glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
 
-            gui.screenOne(window, objects, fps, g);
+            gui.screenOne(window, objects, fps, g, text);
             break;
         }
 
