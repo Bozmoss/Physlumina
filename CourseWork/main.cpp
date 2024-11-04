@@ -33,31 +33,31 @@
 #include "vec.hpp"
 #include "gui.hpp"
 
-struct pair_hash {
-    template <class T1, class T2>
-    std::size_t operator() (const std::pair<T1, T2>& pair) const {
-        auto hash1 = std::hash<T1>{}(pair.first);
-        auto hash2 = std::hash<T2>{}(pair.second);
-        return hash1 ^ (hash2 << 1);
-    }
-};
+//struct pair_hash {
+//    template <class T1, class T2>
+//    std::size_t operator() (const std::pair<T1, T2>& pair) const {
+//        auto hash1 = std::hash<T1>{}(pair.first);
+//        auto hash2 = std::hash<T2>{}(pair.second);
+//        return hash1 ^ (hash2 << 1);
+//    }
+//};
 
 std::vector<Material> materials;
 std::vector<std::shared_ptr<Object>> objects;
-std::unordered_map<std::pair<int, int>, std::vector<std::shared_ptr<Object>>, pair_hash> spatialHash;
+//std::unordered_map<std::pair<int, int>, std::vector<std::shared_ptr<Object>>, pair_hash> spatialHash;
 Game game(objects);
 int screen = 0, frameCount = 0;
 double prevTime = 0.0;
 float g = 0.00005, r = 0.7, f = 0.7, fps = 0.0f;
 const int bound = 10;
-const float gridSize = 1.0;
+//const float gridSize = 1.0;
 std::vector<std::string> text;
 
-std::pair<int, int> computeHash(const vec& pos) {
-    int x = static_cast<int>((pos.x+1) / gridSize);
-    int y = static_cast<int>((pos.y+1) / gridSize);
-    return { x, y };
-}
+//std::pair<int, int> computeHash(const vec& pos) {
+//    int x = static_cast<int>((pos.x+1) / gridSize);
+//    int y = static_cast<int>((pos.y+1) / gridSize);
+//    return { x, y };
+//}
 
 void mouse(GLFWwindow* window, double xpos, double ypos) {
     ImGuiIO& io = ImGui::GetIO();
@@ -70,44 +70,88 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwDestroyWindow(window);
     }
-    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-        objects.clear();
-        for (int i = 0; i < bound; i++) {
-            int r = rand() % 1000, r2 = rand() % 1000;
-            ObjectData o = { 0, 0, vec {r / 1000.0f, (float)i / 5, r2 / 1000.0f}, 0.1, 1.0 };
-            auto s = std::make_shared<Sphere>(o);
-            objects.push_back(s);
-        }
-    }
 }
 
-std::vector<std::string> printSpatialHash() {
-    std::vector<std::string> tArr;
-    for (const auto& pair : spatialHash) {
-        std::string t;
-        const auto& hashKey = pair.first;
-        const auto& cellObjects = pair.second;
+//std::vector<std::string> printSpatialHash() {
+//    std::vector<std::string> tArr;
+//    for (const auto& pair : spatialHash) {
+//        std::string t;
+//        const auto& hashKey = pair.first;
+//        const auto& cellObjects = pair.second;
+//
+//        t += "Hash Key: (" + std::to_string(hashKey.first);
+//        t += ", " + std::to_string(hashKey.second);
+//        t += "): \n";
+//
+//        for (const auto& obj : cellObjects) {
+//            t += "Object at (";
+//            t += std::to_string(obj->getData()->r.x);
+//            t += ", ";
+//            t += std::to_string(obj->getData()->r.y);
+//            t += ", ";
+//            t += std::to_string(obj->getData()->r.z);
+//            t += ") with radius ";
+//            t += std::to_string(obj->getData()->l1);
+//            t += " | ";
+//            t += "\n";
+//        }
+//        t += "\n";
+//        tArr.push_back(t);
+//    }
+//    return tArr;
+//}
 
-        t += "Hash Key: (" + std::to_string(hashKey.first);
-        t += ", " + std::to_string(hashKey.second);
-        t += "): \n";
+//void update() {                           //WITH HASH
+//    double currentTime = glfwGetTime();
+//    frameCount++;
+//    if (currentTime - prevTime >= 1.0) {
+//        fps = frameCount;
+//        frameCount = 0;
+//        prevTime = currentTime;
+//    }
+//    for (auto& o : objects) {
+//        if (o->getData()->firstHash) {
+//            auto key = computeHash(o->getData()->r);
+//            spatialHash[key].push_back(o);
+//            o->updateObject(g, r);
+//            o->getData()->firstHash = false;
+//        }
+//        else {
+//            auto oldHashKey = computeHash(o->getData()->r);
+//            o->updateObject(g, r);
+//            auto newHashKey = computeHash(o->getData()->r);
+//            if (oldHashKey != newHashKey) {
+//                auto& oldCell = spatialHash[oldHashKey];
+//                oldCell.erase(std::remove(oldCell.begin(), oldCell.end(), o), oldCell.end());
+//                spatialHash[newHashKey].push_back(o);
+//            }
+//        }
+//    }
+//    text = printSpatialHash();
+//    for (auto& pair : spatialHash) {
+//        auto& cellObjects = pair.second;
+//        for (size_t i = 0; i < cellObjects.size(); i++) {
+//            for (size_t j = i + 1; j < cellObjects.size(); j++) {
+//                if (cellObjects[i]->checkCollision(*cellObjects[j])) {
+//                    cellObjects[i]->resolveCollision(*cellObjects[j]);
+//                }
+//            }
+//        }
+//    }
+//}
 
-        for (const auto& obj : cellObjects) {
-            t += "Object at (";
-            t += std::to_string(obj->getData()->r.x);
-            t += ", ";
-            t += std::to_string(obj->getData()->r.y);
-            t += ", ";
-            t += std::to_string(obj->getData()->r.z);
-            t += ") with radius ";
-            t += std::to_string(obj->getData()->l1);
-            t += " | ";
-            t += "\n";
-        }
-        t += "\n";
-        tArr.push_back(t);
-    }
-    return tArr;
+void printObjectData(std::shared_ptr<Object>& o) {
+    text.push_back("Type:             " + std::to_string(o->getData()->type));
+    text.push_back("Material:         " + std::to_string(o->getData()->material));
+    text.push_back("Position:         " + std::to_string(o->getData()->r.x) + " " + std::to_string(o->getData()->r.y) + " " + std::to_string(o->getData()->r.z));
+    text.push_back("Defining length:  " + std::to_string(o->getData()->l1));
+    text.push_back("Mass:             " + std::to_string(o->getData()->mass));
+    text.push_back("Velocity:         " + std::to_string(o->getData()->vel.x) + " " + std::to_string(o->getData()->vel.y) + " " + std::to_string(o->getData()->vel.z));
+    text.push_back("Angular velocity: " + std::to_string(o->getData()->angVel.x) + " " + std::to_string(o->getData()->angVel.y) + " " + std::to_string(o->getData()->angVel.z));
+    text.push_back("Down:             " + std::to_string(o->getData()->down));
+    text.push_back("Moving:           " + std::to_string(o->getData()->moving));
+    text.push_back("Floor:            " + std::to_string(o->getData()->floor));
+    text.push_back("\n");
 }
 
 void update() {
@@ -118,32 +162,16 @@ void update() {
         frameCount = 0;
         prevTime = currentTime;
     }
+    text.clear();
     for (auto& o : objects) {
-        if (o->getData()->firstHash) {
-            auto key = computeHash(o->getData()->r);
-            spatialHash[key].push_back(o);
-            o->updateObject(g, r);
-            o->getData()->firstHash = false;
-        }
-        else {
-            auto oldHashKey = computeHash(o->getData()->r);
-            o->updateObject(g, r);
-            auto newHashKey = computeHash(o->getData()->r);
-            if (oldHashKey != newHashKey) {
-                auto& oldCell = spatialHash[oldHashKey];
-                oldCell.erase(std::remove(oldCell.begin(), oldCell.end(), o), oldCell.end());
-                spatialHash[newHashKey].push_back(o);
-            }
-        }
+        o->updateObject(g, r);
+        printObjectData(o);
     }
-    text = printSpatialHash();
-    for (auto& pair : spatialHash) {
-        auto& cellObjects = pair.second;
-        for (size_t i = 0; i < cellObjects.size(); i++) {
-            for (size_t j = i + 1; j < cellObjects.size(); j++) {
-                if (cellObjects[i]->checkCollision(*cellObjects[j])) {
-                    cellObjects[i]->resolveCollision(*cellObjects[j]);
-                }
+    int i = 0;
+    for (auto& o : objects) {
+        for (int j = i + 1; j < objects.size(); j++) {
+            if (o->checkCollision((*objects.at(j)))) {
+                o->resolveCollision((*objects.at(j)));
             }
         }
     }

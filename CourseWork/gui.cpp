@@ -86,7 +86,7 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         End();
     }
     if (debug) {
-        SetNextWindowSize(ImVec2(width / 5.0, height / 5.0));
+        SetNextWindowSize(ImVec2(width / 5.0, height / 3.0));
         if (Begin("Debug", &debug)) {
             for (std::string t : tArr) {
                 Text(t.c_str());
