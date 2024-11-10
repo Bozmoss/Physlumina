@@ -48,7 +48,7 @@ std::vector<std::shared_ptr<Object>> objects;
 Game game(objects);
 int screen = 0, frameCount = 0;
 double prevTime = 0.0;
-float g = 0.00005, r = 0.7, f = 0.7, fps = 0.0f;
+float g = 0.00005, r = 0.7, f = 0.5, fps = 0.0f;
 const int bound = 10;
 //const float gridSize = 1.0;
 std::vector<std::string> text;

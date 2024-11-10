@@ -51,47 +51,49 @@ bool Object::isClicked(std::vector<float> ro, std::vector<float> rd, float final
 }
 
 bool Object::checkCollision(Object& other) {
+    if (this == &other) return false;
     float dist = vOps.length(vOps.add(data.r, vOps.scale(other.getData()->r, -1)));
     return dist < (data.l1 + other.getData()->l1);
 }
 
 void Object::resolveCollision(Object& other) {
+    bool check = true;
     if (data.mass <= 0 || other.getData()->mass <= 0) {
-        std::cerr << "Error: Mass cannot be zero or negative." << std::endl;
-        return; // Prevent any further calculations
+        throw std::runtime_error("Error: Mass cannot be zero or negative");
+        return;
     }
 
-    vec colNorm = vOps.normalise(vOps.add(other.getData()->r, vOps.scale(data.r, -1)));
+    vec col = vOps.add(other.getData()->r, vOps.scale(data.r, -1));
+
+    if (vOps.length(col) < 0) {
+        check = false;
+    }
+
+    vec colNorm = vOps.normalise(col);
 
     if (vOps.length(colNorm) == 0) {
-        std::cerr << "Error: Collision normal is a zero vector. Collision cannot be resolved." << std::endl;
-        return; // Early exit
+        throw std::runtime_error("Error: Collision normal is a zero vector. Collision cannot be resolved.");
+        return;
     }
 
     vec relVel = vOps.add(other.getData()->vel, vOps.scale(data.vel, -1));
     float velNorm = vOps.dot(relVel, colNorm);
-    if (velNorm > 0) return;
+    if (check) {
+        if (velNorm > 0) return;
+    }
     float e = 0.6f;
     float j = -(1 + e) * velNorm / (1 / data.mass + 1 / other.getData()->mass);
+    if (j < 0.005) {
+        j = 0.005;
+    }
     vec impulse = vOps.scale(colNorm, j);
     data.vel = vOps.add(data.vel, vOps.scale(impulse, -1 / data.mass));
     other.getData()->vel = vOps.add(other.getData()->vel, vOps.scale(impulse, 1 / other.getData()->mass));
 
     if (std::isnan(data.vel.x) || std::isnan(data.vel.y) || std::isnan(other.getData()->vel.x) || std::isnan(other.getData()->vel.y)) {
-        std::cerr << "Error: Resulting velocity is NaN." << std::endl;
-        return; // Handle appropriately
+        throw std::runtime_error("Error: Resulting velocity is NaN.");
+        return;
     }
-
-    //float overlap = data.l1 + other.getData()->l1 - vOps.length(vOps.add(data.r, vOps.scale(other.getData()->r, -1)));
-
-    //if (overlap < 0) {
-    //    std::cerr << "Warning: Negative overlap detected. No need for correction." << std::endl;
-    //    return; // No penetration to resolve
-    //}
-
-    //vec correction = vOps.scale(colNorm, overlap / 2.0f);
-    //data.r = vOps.add(data.r, correction);
-    //other.getData()->r = vOps.add(other.getData()->r, vOps.scale(correction, -1));
 }
 
 float Object::getLastT() {
