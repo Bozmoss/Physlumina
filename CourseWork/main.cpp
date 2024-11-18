@@ -141,6 +141,7 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 //}
 
 void printObjectData(std::shared_ptr<Object>& o) {
+    text.push_back(std::to_string(g));
     text.push_back("Type:             " + std::to_string(o->getData()->type));
     text.push_back("Material:         " + std::to_string(o->getData()->material));
     text.push_back("Position:         " + std::to_string(o->getData()->r.x) + " " + std::to_string(o->getData()->r.y) + " " + std::to_string(o->getData()->r.z));
@@ -303,10 +304,10 @@ int main(int argc, char** argv) {
             gui.mainMenu(screen);
             break;
         case 1:
+            p.activate();
             update();
             updateObjectDatas();
 
-            p.activate();
             fvs.update(p, game.getAX(), game.getAY(), materials, objects);
 
             // Clear the screen

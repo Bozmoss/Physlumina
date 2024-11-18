@@ -19,7 +19,6 @@ void Object::update(float f) {
 void Object::updateObject(float g, float r) {
     if (data.floor) {
         data.vel.y = 0.0f;
-        data.floor = false;
         data.down = false;
     }
     if (!data.moving) {
@@ -27,16 +26,12 @@ void Object::updateObject(float g, float r) {
             data.vel.y -= g;
             if (data.r.y - data.l1 < -1.5) {
                 data.r.y = -1.5 + data.l1;
-                data.vel.y = -data.vel.y * r - r/100.0;
-                if (abs(data.vel.y) < g * 0.25) {
+                if (!data.floor) {
+                    data.vel.y = -data.vel.y * r - r / 100.0;
+                }
+                if (abs(data.vel.y) <= 0.004) {
                     data.floor = true;
                 }
-            }
-        }
-        else {
-            data.vel.y -= g;
-            if (data.vel.y <= 0) {
-                data.down = true;
             }
         }
     }
@@ -57,26 +52,7 @@ bool Object::checkCollision(Object& other) {
 }
 
 void Object::resolveCollision(Object& other) {
-    bool check = true;
-    if (data.mass <= 0 || other.getData()->mass <= 0) {
-        throw std::runtime_error("Error: Mass cannot be zero or negative");
-        return;
-    }
-
-    vec col = vOps.add(other.getData()->r, vOps.scale(data.r, -1));
-
-    vec colNorm = {0.0, 1.0, 0.0};
-    if (vOps.length(colNorm) != 0) {
-        colNorm = vOps.normalise(col);
-    }
-
-    if (vOps.length(col) > 0) {
-        float overlap = (data.l1 + other.getData()->l1) - vOps.length(col);
-        vec correction = vOps.scale(colNorm, overlap / 2.0f);
-        data.r = vOps.add(data.r, correction);
-        other.getData()->r = vOps.add(other.getData()->r, vOps.scale(correction, -1));
-    }
-
+    vec colNorm = vOps.normalise(vOps.add(other.getData()->r, vOps.scale(data.r, -1)));
     vec relVel = vOps.add(other.getData()->vel, vOps.scale(data.vel, -1));
     float velNorm = vOps.dot(relVel, colNorm);
     if (velNorm > 0) return;
@@ -84,7 +60,13 @@ void Object::resolveCollision(Object& other) {
     float j = -(1 + e) * velNorm / (1 / data.mass + 1 / other.getData()->mass);
     vec impulse = vOps.scale(colNorm, j);
     data.vel = vOps.add(data.vel, vOps.scale(impulse, -1 / data.mass));
+    if (data.floor) {
+        data.vel = vOps.scale(data.vel, -1);
+    }
     other.getData()->vel = vOps.add(other.getData()->vel, vOps.scale(impulse, 1 / other.getData()->mass));
+    if (other.getData()->floor) {
+        other.getData()->vel = vOps.scale(other.getData()->vel, -1);
+    }
 }
 
 float Object::getLastT() {
