@@ -65,35 +65,26 @@ void Object::resolveCollision(Object& other) {
 
     vec col = vOps.add(other.getData()->r, vOps.scale(data.r, -1));
 
-    if (vOps.length(col) < 0) {
-        check = false;
+    vec colNorm = {0.0, 1.0, 0.0};
+    if (vOps.length(colNorm) != 0) {
+        colNorm = vOps.normalise(col);
     }
 
-    vec colNorm = vOps.normalise(col);
-
-    if (vOps.length(colNorm) == 0) {
-        throw std::runtime_error("Error: Collision normal is a zero vector. Collision cannot be resolved.");
-        return;
+    if (vOps.length(col) > 0) {
+        float overlap = (data.l1 + other.getData()->l1) - vOps.length(col);
+        vec correction = vOps.scale(colNorm, overlap / 2.0f);
+        data.r = vOps.add(data.r, correction);
+        other.getData()->r = vOps.add(other.getData()->r, vOps.scale(correction, -1));
     }
 
     vec relVel = vOps.add(other.getData()->vel, vOps.scale(data.vel, -1));
     float velNorm = vOps.dot(relVel, colNorm);
-    if (check) {
-        if (velNorm > 0) return;
-    }
+    if (velNorm > 0) return;
     float e = 0.6f;
     float j = -(1 + e) * velNorm / (1 / data.mass + 1 / other.getData()->mass);
-    if (j < 0.005) {
-        j = 0.005;
-    }
     vec impulse = vOps.scale(colNorm, j);
     data.vel = vOps.add(data.vel, vOps.scale(impulse, -1 / data.mass));
     other.getData()->vel = vOps.add(other.getData()->vel, vOps.scale(impulse, 1 / other.getData()->mass));
-
-    if (std::isnan(data.vel.x) || std::isnan(data.vel.y) || std::isnan(other.getData()->vel.x) || std::isnan(other.getData()->vel.y)) {
-        throw std::runtime_error("Error: Resulting velocity is NaN.");
-        return;
-    }
 }
 
 float Object::getLastT() {
