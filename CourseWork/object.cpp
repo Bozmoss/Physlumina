@@ -9,7 +9,7 @@ Object::Object(ObjectData data):
 float Object::SDF() { return 0; }
 
 void Object::update(float f) {
-    if (data.r.y - data.l1 <= -1.5 && !data.moving) {
+    if (data.r.y - data.l1 <= -1.5) {
         data.vel.x *= f;
         data.vel.z *= f;
     }
@@ -17,7 +17,7 @@ void Object::update(float f) {
 }
 
 void Object::updateObject(float g, float r) {
-    if (data.floor) {
+    /*if (data.floor) {
         data.vel.y = 0.0f;
         data.down = false;
     }
@@ -34,11 +34,24 @@ void Object::updateObject(float g, float r) {
                 }
             }
         }
+    }*/
+    if (data.r.y - data.l1 <= -1.5) {
+        data.r.y = data.l1 - 1.5;
+        if (abs(data.vel.y) < 0.003) {
+            data.vel.y = 0;
+        }
+        else {
+            vec colNorm = vOps.normalise(vec{ 0.0, data.r.y, 0.0 });
+            vec relVel = vOps.scale(data.vel, -1);
+            float velNorm = vOps.dot(relVel, colNorm);
+            float j = -(1 + r) * velNorm * data.mass;
+            vec impulse = vOps.scale(colNorm, j);
+            data.vel = vOps.add(data.vel, vOps.scale(impulse, -1 / data.mass));
+        }
     }
-}
-
-void Object::stopMoving() {
-    data.moving = false;
+    else {
+        data.vel.y -= g;
+    }
 }
 
 bool Object::isClicked(std::vector<float> ro, std::vector<float> rd, float finalT) {
@@ -60,9 +73,6 @@ void Object::resolveCollision(Object& other) {
     float j = -(1 + e) * velNorm / (1 / data.mass + 1 / other.getData()->mass);
     vec impulse = vOps.scale(colNorm, j);
     data.vel = vOps.add(data.vel, vOps.scale(impulse, -1 / data.mass));
-    if (data.floor) {
-        data.vel = vOps.scale(data.vel, -1);
-    }
     other.getData()->vel = vOps.add(other.getData()->vel, vOps.scale(impulse, 1 / other.getData()->mass));
     if (other.getData()->floor) {
         other.getData()->vel = vOps.scale(other.getData()->vel, -1);

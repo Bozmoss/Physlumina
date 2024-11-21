@@ -150,7 +150,6 @@ void printObjectData(std::shared_ptr<Object>& o) {
     text.push_back("Velocity:         " + std::to_string(o->getData()->vel.x) + " " + std::to_string(o->getData()->vel.y) + " " + std::to_string(o->getData()->vel.z));
     text.push_back("Angular velocity: " + std::to_string(o->getData()->angVel.x) + " " + std::to_string(o->getData()->angVel.y) + " " + std::to_string(o->getData()->angVel.z));
     text.push_back("Down:             " + std::to_string(o->getData()->down));
-    text.push_back("Moving:           " + std::to_string(o->getData()->moving));
     text.push_back("Floor:            " + std::to_string(o->getData()->floor));
     text.push_back("\n");
 }

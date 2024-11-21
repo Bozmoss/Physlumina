@@ -68,12 +68,6 @@ public:
     void updateObject(float g, float r);
 
     /**
-     * Stops an object from moving
-     * 
-     */
-    void stopMoving();
-
-    /**
      * Determines if an object has been clicked
      * 
      * \param float xpos

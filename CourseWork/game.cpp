@@ -16,7 +16,7 @@ void Game::mouseEvent(GLFWwindow* window, double xpos, double ypos, float g, flo
     float xoffset = 0, yoffset = 0;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
         for (auto& o : objects) {
-            o->stopMoving();
+            //o->stopMoving();
             o->reset();
         }
         firstMouse = true;
