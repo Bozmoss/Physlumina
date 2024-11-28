@@ -28,7 +28,7 @@ struct ObjectData {
     int type, material;
     vec r;
     float l1, mass;
-    vec vel, angVel;
+    vec vel, impulse;
     bool down = true, moving = false, floor = false;//, firstHash = true;
 };
 

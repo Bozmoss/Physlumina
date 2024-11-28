@@ -141,14 +141,12 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 //}
 
 void printObjectData(std::shared_ptr<Object>& o) {
-    text.push_back(std::to_string(g));
     text.push_back("Type:             " + std::to_string(o->getData()->type));
     text.push_back("Material:         " + std::to_string(o->getData()->material));
     text.push_back("Position:         " + std::to_string(o->getData()->r.x) + " " + std::to_string(o->getData()->r.y) + " " + std::to_string(o->getData()->r.z));
     text.push_back("Defining length:  " + std::to_string(o->getData()->l1));
     text.push_back("Mass:             " + std::to_string(o->getData()->mass));
     text.push_back("Velocity:         " + std::to_string(o->getData()->vel.x) + " " + std::to_string(o->getData()->vel.y) + " " + std::to_string(o->getData()->vel.z));
-    text.push_back("Angular velocity: " + std::to_string(o->getData()->angVel.x) + " " + std::to_string(o->getData()->angVel.y) + " " + std::to_string(o->getData()->angVel.z));
     text.push_back("Down:             " + std::to_string(o->getData()->down));
     text.push_back("Floor:            " + std::to_string(o->getData()->floor));
     text.push_back("\n");
