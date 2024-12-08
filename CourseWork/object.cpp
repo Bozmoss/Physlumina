@@ -10,13 +10,8 @@ float Object::SDF() { return 0; }
 
 void Object::update(float f) {
     if (data.r.y - data.l1 <= -1.5) {
-        /*
-        * Force of impulse = impulse / (2s / vel)
-        * R = F + mg
-        * Friction = f * R
-        * vel -= ft/m
-        */
-        vec force = vOps.
+        data.vel.x *= f;
+        data.vel.z *= f;
     }
     data.r = vOps.add(data.r, data.vel);
 }

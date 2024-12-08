@@ -6,9 +6,9 @@
  * \date   August 2024
  *********************************************************************/
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+//#include "imgui.h"
+//#include "imgui_impl_glfw.h"
+//#include "imgui_impl_opengl3.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -33,31 +33,14 @@
 #include "vec.hpp"
 #include "gui.hpp"
 
-//struct pair_hash {
-//    template <class T1, class T2>
-//    std::size_t operator() (const std::pair<T1, T2>& pair) const {
-//        auto hash1 = std::hash<T1>{}(pair.first);
-//        auto hash2 = std::hash<T2>{}(pair.second);
-//        return hash1 ^ (hash2 << 1);
-//    }
-//};
-
 std::vector<Material> materials;
 std::vector<std::shared_ptr<Object>> objects;
-//std::unordered_map<std::pair<int, int>, std::vector<std::shared_ptr<Object>>, pair_hash> spatialHash;
 Game game(objects);
 int screen = 0, frameCount = 0;
 double prevTime = 0.0;
-float g = 0.00005, r = 0.7, f = 0.5, fps = 0.0f;
+float g = 0.0005, r = 0.7, f = 0.5, fps = 0.0f;
 const int bound = 10;
-//const float gridSize = 1.0;
 std::vector<std::string> text;
-
-//std::pair<int, int> computeHash(const vec& pos) {
-//    int x = static_cast<int>((pos.x+1) / gridSize);
-//    int y = static_cast<int>((pos.y+1) / gridSize);
-//    return { x, y };
-//}
 
 void mouse(GLFWwindow* window, double xpos, double ypos) {
     ImGuiIO& io = ImGui::GetIO();
@@ -70,75 +53,13 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwDestroyWindow(window);
     }
+    if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+        int r[2] = { rand() % 100, rand() % 100 };
+        ObjectData o = { 0, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
+        auto s = std::make_shared<Sphere>(o);
+        objects.push_back(s);
+    }
 }
-
-//std::vector<std::string> printSpatialHash() {
-//    std::vector<std::string> tArr;
-//    for (const auto& pair : spatialHash) {
-//        std::string t;
-//        const auto& hashKey = pair.first;
-//        const auto& cellObjects = pair.second;
-//
-//        t += "Hash Key: (" + std::to_string(hashKey.first);
-//        t += ", " + std::to_string(hashKey.second);
-//        t += "): \n";
-//
-//        for (const auto& obj : cellObjects) {
-//            t += "Object at (";
-//            t += std::to_string(obj->getData()->r.x);
-//            t += ", ";
-//            t += std::to_string(obj->getData()->r.y);
-//            t += ", ";
-//            t += std::to_string(obj->getData()->r.z);
-//            t += ") with radius ";
-//            t += std::to_string(obj->getData()->l1);
-//            t += " | ";
-//            t += "\n";
-//        }
-//        t += "\n";
-//        tArr.push_back(t);
-//    }
-//    return tArr;
-//}
-
-//void update() {                           //WITH HASH
-//    double currentTime = glfwGetTime();
-//    frameCount++;
-//    if (currentTime - prevTime >= 1.0) {
-//        fps = frameCount;
-//        frameCount = 0;
-//        prevTime = currentTime;
-//    }
-//    for (auto& o : objects) {
-//        if (o->getData()->firstHash) {
-//            auto key = computeHash(o->getData()->r);
-//            spatialHash[key].push_back(o);
-//            o->updateObject(g, r);
-//            o->getData()->firstHash = false;
-//        }
-//        else {
-//            auto oldHashKey = computeHash(o->getData()->r);
-//            o->updateObject(g, r);
-//            auto newHashKey = computeHash(o->getData()->r);
-//            if (oldHashKey != newHashKey) {
-//                auto& oldCell = spatialHash[oldHashKey];
-//                oldCell.erase(std::remove(oldCell.begin(), oldCell.end(), o), oldCell.end());
-//                spatialHash[newHashKey].push_back(o);
-//            }
-//        }
-//    }
-//    text = printSpatialHash();
-//    for (auto& pair : spatialHash) {
-//        auto& cellObjects = pair.second;
-//        for (size_t i = 0; i < cellObjects.size(); i++) {
-//            for (size_t j = i + 1; j < cellObjects.size(); j++) {
-//                if (cellObjects[i]->checkCollision(*cellObjects[j])) {
-//                    cellObjects[i]->resolveCollision(*cellObjects[j]);
-//                }
-//            }
-//        }
-//    }
-//}
 
 void printObjectData(std::shared_ptr<Object>& o) {
     text.push_back("Type:             " + std::to_string(o->getData()->type));
@@ -224,8 +145,8 @@ int main(int argc, char** argv) {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     ImGui::StyleColorsDark();
 
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 440");
+    /*ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 440");*/
 
     Shader vertexShader(Shader::Type::VERTEX, "./vertex.glsl");
     if (vertexShader.inError()) {
@@ -262,6 +183,22 @@ int main(int argc, char** argv) {
     {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
     };
 
+    int r[4] = { rand() % 100, rand() % 100, rand() % 100, rand() % 100 };
+
+    ObjectData objectDatas[] = {
+        {0, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.3, 1.0},
+        {0, 1, vec {r[2] / 100.0f, 0.5, r[3] / 100.0f}, 0.4, 1.0}
+    };
+
+    for (int i = 0; i < sizeof(objectDatas) / sizeof(objectDatas[0]); i++) {
+        switch (objectDatas[i].type) {
+        case 0:
+            auto s = std::make_shared<Sphere>(objectDatas[i]);
+            objects.push_back(s);
+            break;
+        }
+    }
+
     FragVars fvs(res, game.getAX(), game.getAY(), lights, lightCols, materials, objects);
 
     std::vector<GLfloat> verts = {
@@ -288,47 +225,68 @@ int main(int argc, char** argv) {
 
     fvs.init(p);
 
-    GUI gui(mode->width, mode->height);
+    /*GUI gui(mode->width, mode->height);*/
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-        switch (screen) {
-        case 0:
-            gui.mainMenu(screen);
-            break;
-        case 1:
-            p.activate();
-            update();
-            updateObjectDatas();
-
-            fvs.update(p, game.getAX(), game.getAY(), materials, objects);
-
-            // Clear the screen
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
-
-            gui.screenOne(window, objects, fps, g, text);
-            break;
-        }
-
-        ImGui::Render();
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        p.activate();
+        update();
+        updateObjectDatas();
+        
+        fvs.update(p, game.getAX(), game.getAY(), materials, objects);
+        
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
 
         glfwSwapBuffers(window);
     }
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }
+
+
+//while (!glfwWindowShouldClose(window)) {
+//    glfwPollEvents();
+//
+//    ImGui_ImplOpenGL3_NewFrame();
+//    ImGui_ImplGlfw_NewFrame();
+//    ImGui::NewFrame();
+//    switch (screen) {
+//    case 0:
+//        gui.mainMenu(screen);
+//        break;
+//    case 1:
+//        p.activate();
+//        update();
+//        updateObjectDatas();
+//
+//        fvs.update(p, game.getAX(), game.getAY(), materials, objects);
+//
+//        // Clear the screen
+//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//        glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
+//
+//        gui.screenOne(window, objects, fps, g, text);
+//        break;
+//    }
+//
+//    ImGui::Render();
+//    int display_w, display_h;
+//    glfwGetFramebufferSize(window, &display_w, &display_h);
+//    glViewport(0, 0, display_w, display_h);
+//    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+//
+//    glfwSwapBuffers(window);
+//}
+//
+//ImGui_ImplOpenGL3_Shutdown();
+//ImGui_ImplGlfw_Shutdown();
+//ImGui::DestroyContext();
+//glfwDestroyWindow(window);
+//glfwTerminate();
+//return 0;
