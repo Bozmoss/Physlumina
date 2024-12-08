@@ -14,4 +14,5 @@ public:
     vec scale(vec c, float s);
     float length(vec v);
     vec normalise(vec v);
+    float clamp(float v, float min, float max);
 };

@@ -55,7 +55,7 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
     }
     if (key == GLFW_KEY_A && action == GLFW_PRESS) {
         int r[2] = { rand() % 100, rand() % 100 };
-        ObjectData o = { 0, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
+        ObjectData o = { 1, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
         auto s = std::make_shared<Sphere>(o);
         objects.push_back(s);
     }
@@ -68,8 +68,6 @@ void printObjectData(std::shared_ptr<Object>& o) {
     text.push_back("Defining length:  " + std::to_string(o->getData()->l1));
     text.push_back("Mass:             " + std::to_string(o->getData()->mass));
     text.push_back("Velocity:         " + std::to_string(o->getData()->vel.x) + " " + std::to_string(o->getData()->vel.y) + " " + std::to_string(o->getData()->vel.z));
-    text.push_back("Down:             " + std::to_string(o->getData()->down));
-    text.push_back("Floor:            " + std::to_string(o->getData()->floor));
     text.push_back("\n");
 }
 
@@ -83,24 +81,15 @@ void update() {
     }
     text.clear();
     for (auto& o : objects) {
-        o->updateObject(g, r);
-        printObjectData(o);
-    }
-    int i = 0;
-    for (auto& o : objects) {
-        for (int j = i + 1; j < objects.size(); j++) {
-            if (o->checkCollision((*objects.at(j)))) {
-                o->resolveCollision((*objects.at(j)));
+        o->update(f, g, r);
+        for (auto& other : objects) {
+            if (o != other) {
+                if (o->checkCollision(*other)) {
+                    o->resolveCollision(*other);
+                }
             }
         }
     }
-}
-
-void updateObjectDatas() {
-    for (auto& o : objects) {
-        o->update(f);
-    }
-    game.updateObjects(objects);
 }
 
 int main(int argc, char** argv) {
@@ -183,21 +172,10 @@ int main(int argc, char** argv) {
     {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
     };
 
-    int r[4] = { rand() % 100, rand() % 100, rand() % 100, rand() % 100 };
-
-    ObjectData objectDatas[] = {
-        {0, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.3, 1.0},
-        {0, 1, vec {r[2] / 100.0f, 0.5, r[3] / 100.0f}, 0.4, 1.0}
-    };
-
-    for (int i = 0; i < sizeof(objectDatas) / sizeof(objectDatas[0]); i++) {
-        switch (objectDatas[i].type) {
-        case 0:
-            auto s = std::make_shared<Sphere>(objectDatas[i]);
-            objects.push_back(s);
-            break;
-        }
-    }
+    int r[2] = { rand() % 100, rand() % 100 };
+    ObjectData o = { 1, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
+    auto s = std::make_shared<Sphere>(o);
+    objects.push_back(s);
 
     FragVars fvs(res, game.getAX(), game.getAY(), lights, lightCols, materials, objects);
 
@@ -236,7 +214,6 @@ int main(int argc, char** argv) {
 
         p.activate();
         update();
-        updateObjectDatas();
         
         fvs.update(p, game.getAX(), game.getAY(), materials, objects);
         
@@ -258,46 +235,3 @@ int main(int argc, char** argv) {
     glfwTerminate();
     return 0;
 }
-
-
-//while (!glfwWindowShouldClose(window)) {
-//    glfwPollEvents();
-//
-//    ImGui_ImplOpenGL3_NewFrame();
-//    ImGui_ImplGlfw_NewFrame();
-//    ImGui::NewFrame();
-//    switch (screen) {
-//    case 0:
-//        gui.mainMenu(screen);
-//        break;
-//    case 1:
-//        p.activate();
-//        update();
-//        updateObjectDatas();
-//
-//        fvs.update(p, game.getAX(), game.getAY(), materials, objects);
-//
-//        // Clear the screen
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//        glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
-//
-//        gui.screenOne(window, objects, fps, g, text);
-//        break;
-//    }
-//
-//    ImGui::Render();
-//    int display_w, display_h;
-//    glfwGetFramebufferSize(window, &display_w, &display_h);
-//    glViewport(0, 0, display_w, display_h);
-//    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-//
-//    glfwSwapBuffers(window);
-//}
-//
-//ImGui_ImplOpenGL3_Shutdown();
-//ImGui_ImplGlfw_Shutdown();
-//ImGui::DestroyContext();
-//glfwDestroyWindow(window);
-//glfwTerminate();
-//return 0;

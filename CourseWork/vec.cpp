@@ -35,3 +35,7 @@ float VecOps::length(vec v) {
 vec VecOps::normalise(vec v) {
     return scale(v, 1.0f/length(v));
 }
+
+float VecOps::clamp(float v, float min, float max) {
+    return (v < min) ? min : (v > max) ? max : v;
+}

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "vec.hpp"
 
@@ -27,12 +28,15 @@
 struct ObjectData {
     int type, material;
     vec r;
-    float l1, mass;
-    vec vel, impulse;
-    bool down = true, moving = false, floor = false;//, firstHash = true;
+    float l1, mass, inertia;
+    vec vel, angVel;
+    bool moving;
 };
 
 class Object {
+private:
+    bool SBCheck(Object s, Object b), overlapOnAxis(float min1, float max1, float min2, float max2);
+    vec clampToBox(vec p, vec bMin, vec bMax);
 protected:
     ObjectData data;
     float lastT;
@@ -43,7 +47,8 @@ protected:
      * 
      * \return float
      */
-    float SDF();
+    float SDF(vec a, vec b, float c);
+    float max(float a, float b), min(float a, float b);
 public:
     /**
      * Initialises the object class
@@ -57,15 +62,7 @@ public:
      * 
      * \param float f
      */
-    void update(float f);
-
-    /**
-     * Applies gravity to an object
-     * 
-     * \param float g
-     * \param float r
-     */
-    void updateObject(float g, float r);
+    void update(float f, float g, float r);
 
     /**
      * Determines if an object has been clicked
@@ -135,7 +132,14 @@ public:
      *
      * \param ObjectData data
      */
-    Sphere(ObjectData data) : Object(data) {}
+    Sphere(ObjectData data) : Object(data) { data.inertia = 0.4 * data.mass * data.l1 * data.l1; }
 
     bool isClicked(std::vector<float> ro, std::vector<float> rd, float finalT) override;
+};
+
+class Box : public Object {
+protected:
+    float SDF(vec p, vec c, float bL);
+public:
+    Box(ObjectData data) : Object(data) { data.inertia = (1.0 / 6.0) * data.mass * data.l1 * data.l1; }
 };

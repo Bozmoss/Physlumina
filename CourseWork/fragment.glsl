@@ -41,19 +41,17 @@ struct SDF {
     int index;
 };
 
-bool intersectsBoundingVolume(vec3 ro, vec3 rd, vec3 c, float r) {
-    vec3 oc = ro - c;
-    float b = dot(oc, rd);
-    float c1 = dot(oc, oc) - r * r;
-    return b * b - c1 >= 0.0;
-}
-
 float dynamicStepSize(float dist, float minStep, float maxStep) {
     return clamp(dist, minStep, maxStep);
 }
 
 SDF sphereSDF(vec3 p, vec3 c, float r, int i) {
     return SDF(length(c-p) - r, i);
+}
+
+SDF boxSDF(vec3 p, vec3 b, vec3 c, int i) {
+    vec3 q = abs(p - c) - b;
+    return SDF(length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0), i);
 }
 
 SDF torusSDF(vec3 p, vec2 t, int i) {
@@ -109,21 +107,19 @@ vec3 translateSDF(vec3 p, vec3 t) {
 SDF finalSDF(vec3 p, vec3 rd) {
     SDF final = planeSDF(p, vec3(0.0, 1.0, 0.0), 1.5, 2);
     for (int i = 0; i < objectsL; i++) {
-
-        if (!intersectsBoundingVolume(p, rd, vec3(objects[i].x, objects[i].y, objects[i].z), objects[i].l1)) {
-            continue;
-        }
-
         SDF temp;
         switch(int(objects[i].type)) {
             case 0:
                 temp = sphereSDF(p, vec3(objects[i].x, objects[i].y, objects[i].z), objects[i].l1, int(objects[i].material));
                 break;
             case 1:
-                temp = torusSDF(p, vec2(objects[i].x, objects[i].y), int(objects[i].material));
+                temp = boxSDF(p, vec3(objects[i].l1), vec3(objects[i].x, objects[i].y, objects[i].z), int(objects[i].material));
                 break;
             case 2:
                 temp = planeSDF(p, vec3(objects[i].x, objects[i].y, objects[i].z), objects[i].l1, int(objects[i].material));
+                break;
+            case 3:
+                temp = torusSDF(p, vec2(objects[i].x, objects[i].y), int(objects[i].material));
                 break;
         };
         final = unionSDF(final, temp);
