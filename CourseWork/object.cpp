@@ -37,8 +37,8 @@ void Object::updateObject(float g, float r) {
     }*/
     if (data.r.y - data.l1 <= -1.5) {
         data.r.y = data.l1 - 1.5;
-        if (abs(data.vel.y) < 0.003) {
-            data.vel.y = 0;
+        if (vOps.length(data.vel) < 0.01f) {
+            data.vel = { 0.0, 0.0, 0.0 };
         }
         else {
             vec colNorm = vOps.normalise(vec{ 0.0, data.r.y, 0.0 });
@@ -68,16 +68,6 @@ void Object::resolveCollision(Object& other) {
     vec col = vOps.add(other.getData()->r, vOps.scale(data.r, -1));
     vec colNorm = vOps.normalise(col);
     vec relVel = vOps.add(other.getData()->vel, vOps.scale(data.vel, -1));
-    if (abs(relVel.x) < 0.001f) {
-        relVel.x = 0.001f;
-    }
-    if (abs(relVel.y) < 0.01f) {
-        relVel.x = 0.001f;
-    }
-    if (abs(relVel.z) < 0.01f) {
-        relVel.x = 0.001f;
-    }
-    std::cout << relVel.x << " " << relVel.y << " " << relVel.z << std::endl;
     float velNorm = vOps.dot(relVel, colNorm);
     if (velNorm > 0) return;
     float e = 0.6f;
