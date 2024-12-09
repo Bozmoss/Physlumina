@@ -2,6 +2,15 @@
 
 #include <iostream>
 
+quar hProd(quar q1, quar q2) {
+    return {
+        q1.w * q2.w - q1.i * q2.i - q1.j * q2.j - q1.k * q2.k,
+        q1.w * q2.i + q1.i * q2.w - q1.j * q2.k + q1.k * q2.j,
+        q1.w * q2.j + q1.i * q2.k + q1.j * q2.w - q1.k * q2.i,
+        q1.w * q2.k - q1.i * q2.j + q1.j * q2.i + q1.k * q2.w
+    };
+}
+
 Object::Object(ObjectData data):
     data{ data }, 
     lastT{ 0 } {}
@@ -16,15 +25,22 @@ float Object::min(float a, float b) {
     return !(a < b) ? a : b;
 }
 
-void Object::update(float f, float g, float r) {
-    if (data.r.y - data.l1 > -1.5f) {
-        vec gravity = { 0.0, -g, 0.0 };
-        data.vel = vOps.add(data.vel, gravity);
-        data.r = vOps.add(data.r, data.vel);
-    }
-    else {
-        data.r.y = data.l1 - 1.5f;
-        data.vel.y = 0;
+void Object::update(float f, float g, float r, bool colliding) {
+    if (!colliding) {
+        if (data.r.y - data.l1 > -1.5f) {
+            vec gravity = { 0.0, -g, 0.0 };
+            data.vel = vOps.add(data.vel, gravity);
+            data.r = vOps.add(data.r, data.vel);
+        }
+        else {
+            data.r.y = data.l1 - 1.5f;
+            data.vel.y = 0;
+        }
+
+        quar pos = { 1, data.r.x, data.r.y, data.r.z };
+        quar ome = { 1, data.angVel.x, data.angVel.y, data.angVel.z };
+        pos = hProd(pos, ome);
+        data.r = { pos.i, pos.j, pos.k };
     }
 }
 
@@ -117,50 +133,7 @@ void Object::resolveCollision(Object& other) {
         }
         case 1:
         {
-            vec r1 = data.r;
-            vec r2 = other.getData()->r;
-
-            vec v1 = data.vel;
-            vec v2 = other.getData()->vel;
-
-            vec r1_to_r2 = vOps.add(r2, vOps.scale(r1, -1));  // Vector from cube 1 to cube 2
-            vec v_rel = vOps.add(v2, vOps.scale(v1, -1));      // Relative velocity
-
-            // Step 2: Calculate normal vector (axis of collision)
-            vec n = vOps.normalise(r1_to_r2);
-
-            // Step 3: Calculate normal and tangential components of relative velocity
-            vec v_rel_normal = vOps.scale(n, vOps.dot(v_rel, n));
-            vec v_rel_tangent = vOps.add(v_rel, vOps.scale(vOps.scale(n, vOps.dot(v_rel, n)), -1));  // Subtract normal component
-
-            // Step 4: Calculate the impulse using the impulse-momentum theorem
-            float e = 0.8f;  // Coefficient of restitution (elasticity)
-            float m1 = data.mass;
-            float m2 = other.getData()->mass;
-
-            // Calculate the moment arms (r_1 and r_2) from the centers of mass
-            vec r1_contact = vOps.add(r1, vOps.scale(n, data.l1));  // Assume center of mass and contact point
-            vec r2_contact = vOps.add(r2, vOps.scale(n, other.getData()->l1));
-
-            // Moments of inertia (assuming uniform cubes, calculate based on mass and dimensions)
-            float I1 = data.inertia;  // These would be computed based on the shape and mass distribution
-            float I2 = other.getData()->inertia;
-
-            // Calculate the impulse magnitude
-            float impulse_magnitude = -(1 + e) * vOps.dot(v_rel, n) / (1 / m1 + 1 / m2 + vOps.dot(r1_contact, n) / I1 + vOps.dot(r2_contact, n) / I2);
-
-            // Step 5: Apply impulse to both cubes' velocities
-            vec impulse = vOps.scale(n, impulse_magnitude);
-
-            data.vel = vOps.add(data.vel, vOps.scale(impulse, 1 / m1));
-            other.getData()->vel = vOps.add(other.getData()->vel, vOps.scale(impulse, -1 / m2));
-
-            // Step 6: Apply torque (change in angular velocity)
-            vec torque1 = vOps.cross(r1_contact, impulse);
-            vec torque2 = vOps.cross(r2_contact, impulse);
-
-            data.angVel = vOps.add(data.angVel, vOps.scale(torque1, 1 / I1));
-            other.getData()->angVel = vOps.add(other.getData()->angVel, vOps.scale(torque2, 1 / I2));
+            data.vel = { 0,0,0 };
             break;
         }
         }

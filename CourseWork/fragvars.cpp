@@ -77,9 +77,10 @@ void FragVars::materialObjectDataUpdate(Program& p) {
             result.push_back(materials.at(i).Ks);
             result.push_back(materials.at(i).Kr);
             result.push_back(materials.at(i).c);
+            result.push_back(0.0);
         }
         else {
-            for (int j = 0; j < 8; j++) {
+            for (int j = 0; j < 9; j++) {
                 result.push_back(0.0);
             }
         }
@@ -91,12 +92,13 @@ void FragVars::materialObjectDataUpdate(Program& p) {
             result.push_back(objects.at(i)->getData()->r.x);
             result.push_back(objects.at(i)->getData()->r.y);
             result.push_back(objects.at(i)->getData()->r.z);
+            result.push_back(objects.at(i)->getData()->angVel.x);
+            result.push_back(objects.at(i)->getData()->angVel.y);
+            result.push_back(objects.at(i)->getData()->angVel.z);
             result.push_back(objects.at(i)->getData()->l1);
-            result.push_back(0.0f);
-            result.push_back(0.0f);
         }
         else {
-            for (int j = 0; j < 8; j++) {
+            for (int j = 0; j < 9; j++) {
                 result.push_back(0.0f);
             }
         }

@@ -27,14 +27,25 @@ struct ObjectData {
     float x;
     float y;
     float z;
+    float omeX;
+    float omeY;
+    float omeZ;
     float l1;
-    float br;
 };
 
 layout(std140) uniform bindPoint {
     Material materials[materialsLen];
     ObjectData objects[objectsLen];
 };
+
+vec4 hProd(vec4 q1, vec4 q2) {
+    return vec4(
+        q1.x * q2.x - q1.y * q2.y - q1.z * q2.z - q1.w * q2.w,
+        q1.x * q2.y + q1.y * q2.x - q1.z * q2.w + q1.w * q2.z,
+        q1.x * q2.z + q1.y * q2.w + q1.z * q2.x - q1.w * q2.y,
+        q1.x * q2.w - q1.y * q2.z + q1.z * q2.y + q1.w * q2.x
+    );
+}
 
 struct SDF {
     float dist;
@@ -107,6 +118,10 @@ vec3 translateSDF(vec3 p, vec3 t) {
 SDF finalSDF(vec3 p, vec3 rd) {
     SDF final = planeSDF(p, vec3(0.0, 1.0, 0.0), 1.5, 2);
     for (int i = 0; i < objectsL; i++) {
+        vec4 pos = vec4(1, p);
+        vec4 angVel = vec4(1, objects[i].omeX, objects[i].omeY, objects[i].omeZ);
+        pos = hProd(pos, angVel);
+        p = vec3(pos.yzw);
         SDF temp;
         switch(int(objects[i].type)) {
             case 0:

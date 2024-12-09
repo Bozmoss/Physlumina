@@ -16,3 +16,10 @@ public:
     vec normalise(vec v);
     float clamp(float v, float min, float max);
 };
+
+struct quar {
+    float w, i, j, k;
+    quar operator+(const quar& other) {
+        return { w + w, i + i, j + j, k + k };
+    }
+};

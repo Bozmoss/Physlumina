@@ -114,7 +114,7 @@ void Game::mouseEvent(GLFWwindow* window, double xpos, double ypos, float g, flo
                 }
             }
             else {
-                o->update(f, g, r);
+                o->update(f, g, r, false);
             }
         }
         lastX = xpos;

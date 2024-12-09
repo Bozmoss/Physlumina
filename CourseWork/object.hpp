@@ -62,7 +62,7 @@ public:
      * 
      * \param float f
      */
-    void update(float f, float g, float r);
+    void update(float f, float g, float r, bool colliding);
 
     /**
      * Determines if an object has been clicked

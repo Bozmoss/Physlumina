@@ -81,14 +81,16 @@ void update() {
     }
     text.clear();
     for (auto& o : objects) {
-        o->update(f, g, r);
+        bool colliding = false;
         for (auto& other : objects) {
             if (o != other) {
                 if (o->checkCollision(*other)) {
                     o->resolveCollision(*other);
+                    colliding = true;
                 }
             }
         }
+        o->update(f, g, r, colliding);
     }
 }
 
@@ -175,6 +177,7 @@ int main(int argc, char** argv) {
     int r[2] = { rand() % 100, rand() % 100 };
     ObjectData o = { 1, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
     auto s = std::make_shared<Sphere>(o);
+    s->getData()->angVel = { 0,0,0 };
     objects.push_back(s);
 
     FragVars fvs(res, game.getAX(), game.getAY(), lights, lightCols, materials, objects);
