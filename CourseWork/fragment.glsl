@@ -9,6 +9,7 @@ out vec4 FragColor;
 uniform vec3 res, lights[lightsLen], lightCols[lightsLen];
 uniform float time, aX, aY;
 uniform int lightsL, materialsL, objectsL;
+ObjectData objects[objectsLen];
 
 struct Material {
     float r;
@@ -21,7 +22,18 @@ struct Material {
     float c;
 };
 
-struct ObjectData {
+struct ObjectDataReceived {
+    float type;
+    float material;
+    float x;
+    float y;
+    float z;
+    float omeX;
+    float packedYZ;
+    float l1;
+};
+
+struct ObjectDataReceived {
     float type;
     float material;
     float x;
@@ -35,7 +47,7 @@ struct ObjectData {
 
 layout(std140) uniform bindPoint {
     Material materials[materialsLen];
-    ObjectData objects[objectsLen];
+    ObjectDataReceived objectsR[objectsLen];
 };
 
 vec4 hProd(vec4 q1, vec4 q2) {
@@ -237,6 +249,10 @@ vec3 sortCol(vec3 ro, vec3 rd, float maxDist) {
 
 void main()
 {
+    for (int i = 0; i < objectsLen; i++) {
+        float current = objectsR[0].packed;
+        // NEED TO FINISH NEED TO FINISH NEED TO FINISH https://chatgpt.com/c/675bef9a-bfb4-8005-a067-b0ad96b8437e
+    }
     vec2 uv = gl_FragCoord.xy / res.xy;
     uv = uv * 2.0 - 1.0;
     uv.x *= res.x / res.y;

@@ -80,7 +80,7 @@ void FragVars::materialObjectDataUpdate(Program& p) {
             result.push_back(0.0);
         }
         else {
-            for (int j = 0; j < 9; j++) {
+            for (int j = 0; j < 8; j++) {
                 result.push_back(0.0);
             }
         }
@@ -93,12 +93,12 @@ void FragVars::materialObjectDataUpdate(Program& p) {
             result.push_back(objects.at(i)->getData()->r.y);
             result.push_back(objects.at(i)->getData()->r.z);
             result.push_back(objects.at(i)->getData()->angVel.x);
-            result.push_back(objects.at(i)->getData()->angVel.y);
-            result.push_back(objects.at(i)->getData()->angVel.z);
+            float packed = 1000.0f * ((objects.at(i)->getData()->angVel.y + 100.0f) / 200.0f) + ((objects.at(i)->getData()->angVel.z + 100.0f) / 200.0f);
+            result.push_back(packed);
             result.push_back(objects.at(i)->getData()->l1);
         }
         else {
-            for (int j = 0; j < 9; j++) {
+            for (int j = 0; j < 8; j++) {
                 result.push_back(0.0f);
             }
         }
