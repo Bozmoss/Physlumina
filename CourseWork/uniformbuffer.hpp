@@ -34,6 +34,8 @@ public:
 
     ~UniformBuffer();
 
+    size_t size() const;
+
     /**
      * Returns the handle of the buffer
      * 
@@ -48,7 +50,7 @@ public:
      * \param Program p
      * \param GLchar* name
      */
-    void fill(const std::vector<float>& data, Program& p, const GLchar* name) {
+    /*void fill(const std::vector<float>& data, Program& p, const GLchar* name) {
         m_number = data.size();
         glBindBuffer(GL_UNIFORM_BUFFER, m_handle);
         glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * m_number, data.data(), GL_DYNAMIC_DRAW);
@@ -59,5 +61,5 @@ public:
         glUniformBlockBinding(p.handle(), blockIndex, 0);
         glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_handle);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    }
+    }*/
 };

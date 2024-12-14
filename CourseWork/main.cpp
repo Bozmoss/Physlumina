@@ -55,9 +55,9 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
     }
     if (key == GLFW_KEY_A && action == GLFW_PRESS) {
         int r[2] = { rand() % 100, rand() % 100 };
-        ObjectData o = { 1, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
-        auto s = std::make_shared<Sphere>(o);
-        objects.push_back(s);
+        ObjectDataFull o = { 1, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
+        auto b = std::make_shared<Box>(o);
+        objects.push_back(b);
     }
 }
 
@@ -175,10 +175,10 @@ int main(int argc, char** argv) {
     };
 
     int r[2] = { rand() % 100, rand() % 100 };
-    ObjectData o = { 1, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
-    auto s = std::make_shared<Sphere>(o);
-    s->getData()->angVel = { 0,0,0 };
-    objects.push_back(s);
+    ObjectDataFull o = { 1, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
+    auto b = std::make_shared<Box>(o);
+    b->getData()->angVel = { 0,0,0 };
+    objects.push_back(b);
 
     FragVars fvs(res, game.getAX(), game.getAY(), lights, lightCols, materials, objects);
 

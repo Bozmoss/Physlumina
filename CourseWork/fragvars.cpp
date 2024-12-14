@@ -66,42 +66,91 @@ void FragVars::update(Program& p, const float &aX, const float &aY, std::vector<
 }
 
 void FragVars::materialObjectDataUpdate(Program& p) {
-    std::vector<float> result;
+    GLuint blockIndex = glGetUniformBlockIndex(p.handle(), "bindPoint");
+    if (blockIndex == GL_INVALID_INDEX) {
+        std::cerr << "Error: Invalid uniform block index" << std::endl;
+        return;
+    }
+    glUniformBlockBinding(p.handle(), blockIndex, 0);  // Binding point 0
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, ub.handle());
+
+    glBindBuffer(GL_UNIFORM_BUFFER, ub.handle());
+    if (ub.handle() == 0) {
+        std::cerr << "Error: Invalid uniform buffer handle" << std::endl;
+        return;
+    }
+
+    void* ptr = glMapBufferRange(GL_UNIFORM_BUFFER, 0, ub.size(), GL_MAP_WRITE_BIT);
+    if (!ptr) {
+        std::cerr << "Failed to map uniform buffer" << std::endl;
+        GLenum error = glGetError();
+        std::cerr << "OpenGL Error: " << error << std::endl;
+        return;
+    }
+    Material* mappedMaterials = static_cast<Material*>(ptr);
+    ObjectData* mappedObjects = reinterpret_cast<ObjectData*>(reinterpret_cast<char*>(ptr) + sizeof(Material) * 100);
+
     for (int i = 0; i < 100; i++) {
         if (i < materials.size()) {
-            result.push_back(materials.at(i).r);
-            result.push_back(materials.at(i).g);
-            result.push_back(materials.at(i).b);
-            result.push_back(materials.at(i).Ka);
-            result.push_back(materials.at(i).Kd);
-            result.push_back(materials.at(i).Ks);
-            result.push_back(materials.at(i).Kr);
-            result.push_back(materials.at(i).c);
-            result.push_back(0.0);
+            mappedMaterials[i] = materials[i];
         }
         else {
-            for (int j = 0; j < 8; j++) {
-                result.push_back(0.0);
-            }
+            memset(&mappedMaterials[i], 0, sizeof(Material));
         }
-    }
-    for (int i = 0; i < 100; i++) {
         if (i < objects.size()) {
-            result.push_back(objects.at(i)->getData()->type);
-            result.push_back(objects.at(i)->getData()->material);
-            result.push_back(objects.at(i)->getData()->r.x);
-            result.push_back(objects.at(i)->getData()->r.y);
-            result.push_back(objects.at(i)->getData()->r.z);
-            result.push_back(objects.at(i)->getData()->angVel.x);
-            float packed = 1000.0f * ((objects.at(i)->getData()->angVel.y + 100.0f) / 200.0f) + ((objects.at(i)->getData()->angVel.z + 100.0f) / 200.0f);
-            result.push_back(packed);
-            result.push_back(objects.at(i)->getData()->l1);
+            mappedObjects[i] = *(objects[i]->getNecessaryData());
         }
         else {
-            for (int j = 0; j < 8; j++) {
-                result.push_back(0.0f);
-            }
+            memset(&mappedObjects[i], 0, sizeof(ObjectData));
         }
     }
-    ub.fill(result, p, "bindPoint");
+
+    glUnmapBuffer(GL_UNIFORM_BUFFER);
+    glFlush();
 }
+
+//void FragVars::materialObjectDataUpdate(Program& p) {
+//    std::vector<float> result;
+//    constexpr int materialStructSize = 8;
+//    constexpr int objectStructSize = 12;
+//    for (int i = 0; i < 100; i++) {
+//        if (i < materials.size()) {
+//            result.push_back(materials.at(i).r);
+//            result.push_back(materials.at(i).g);
+//            result.push_back(materials.at(i).b);
+//            result.push_back(materials.at(i).Ka);
+//            result.push_back(materials.at(i).Kd);
+//            result.push_back(materials.at(i).Ks);
+//            result.push_back(materials.at(i).Kr);
+//            result.push_back(materials.at(i).c);
+//        }
+//        else {
+//            for (int j = 0; j < materialStructSize; j++) {
+//                result.push_back(0.0f);
+//            }
+//        }
+//    }
+//    for (int i = 0; i < 100; i++) {
+//        if (i < objects.size()) {
+//            result.push_back(objects.at(i)->getData()->type);
+//            result.push_back(objects.at(i)->getData()->material);
+//            result.push_back(objects.at(i)->getData()->r.x);
+//            result.push_back(objects.at(i)->getData()->r.y);
+//            result.push_back(objects.at(i)->getData()->r.z);
+//            result.push_back(objects.at(i)->getData()->angVel.x);
+//            result.push_back(objects.at(i)->getData()->angVel.y);
+//            result.push_back(objects.at(i)->getData()->angVel.z);
+//            result.push_back(objects.at(i)->getData()->l1);
+//            // Padding
+//            for (int j = 0; j < 3; j++) {
+//                result.push_back(0.0f);
+//            }
+//        }
+//        else {
+//            for (int j = 0; j < objectStructSize; j++) {
+//                result.push_back(0.0f);
+//            }
+//        }
+//    }
+//    ub.fill(result, p, "bindPoint");
+//}

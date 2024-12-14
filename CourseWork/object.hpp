@@ -27,6 +27,12 @@
  */
 struct ObjectData {
     int type, material;
+    vec r, angVel;
+    float l1;
+};
+
+struct ObjectDataFull {
+    int type, material;
     vec r;
     float l1, mass, inertia;
     vec vel, angVel;
@@ -38,7 +44,8 @@ private:
     bool SBCheck(Object s, Object b), overlapOnAxis(float min1, float max1, float min2, float max2);
     vec clampToBox(vec p, vec bMin, vec bMax);
 protected:
-    ObjectData data;
+    ObjectData necData;
+    ObjectDataFull data;
     float lastT;
     VecOps vOps;
 
@@ -55,7 +62,7 @@ public:
      * 
      * \param ObjectData data
      */
-    Object(ObjectData data);
+    Object(ObjectDataFull data);
 
     /**
      * Updates object data variables
@@ -108,7 +115,8 @@ public:
      * 
      * \return ObjectData*
      */
-    ObjectData *getData();
+    ObjectData *getNecessaryData();
+    ObjectDataFull* getData();
 };
 
 class Sphere : public Object {
@@ -132,7 +140,7 @@ public:
      *
      * \param ObjectData data
      */
-    Sphere(ObjectData data) : Object(data) { data.inertia = 0.4 * data.mass * data.l1 * data.l1; }
+    Sphere(ObjectDataFull data) : Object(data) { data.inertia = 0.4 * data.mass * data.l1 * data.l1; }
 
     bool isClicked(std::vector<float> ro, std::vector<float> rd, float finalT) override;
 };
@@ -141,5 +149,5 @@ class Box : public Object {
 protected:
     float SDF(vec p, vec c, float bL);
 public:
-    Box(ObjectData data) : Object(data) { data.inertia = (1.0 / 6.0) * data.mass * data.l1 * data.l1; }
+    Box(ObjectDataFull data) : Object(data) { data.inertia = (1.0 / 6.0) * data.mass * data.l1 * data.l1; }
 };

@@ -11,9 +11,11 @@ quar hProd(quar q1, quar q2) {
     };
 }
 
-Object::Object(ObjectData data):
+Object::Object(ObjectDataFull data):
     data{ data }, 
-    lastT{ 0 } {}
+    lastT{ 0 } {
+    necData = { data.type, data.material, data.r, data.angVel, data.l1 };
+}
 
 float Object::SDF(vec a, vec b, float c) { return 0; }
 
@@ -31,9 +33,11 @@ void Object::update(float f, float g, float r, bool colliding) {
             vec gravity = { 0.0, -g, 0.0 };
             data.vel = vOps.add(data.vel, gravity);
             data.r = vOps.add(data.r, data.vel);
+            necData.r = vOps.add(data.r, data.vel);
         }
         else {
             data.r.y = data.l1 - 1.5f;
+            necData.r.y = data.l1 - 1.5f;
             data.vel.y = 0;
         }
 
@@ -41,6 +45,7 @@ void Object::update(float f, float g, float r, bool colliding) {
         quar ome = { 1, data.angVel.x, data.angVel.y, data.angVel.z };
         pos = hProd(pos, ome);
         data.r = { pos.i, pos.j, pos.k };
+        necData.r = { pos.i, pos.j, pos.k };
     }
 }
 
@@ -149,10 +154,13 @@ void Object::reset() {
     lastT = 0;
 }
 
-ObjectData *Object::getData() {
-    return &data;
+ObjectData *Object::getNecessaryData() {
+    return &necData;
 }
 
+ObjectDataFull* Object::getData() {
+    return &data;
+}
 
 float Sphere::SDF(vec p, vec c, float r) {
     return vOps.length(vOps.add(c, vOps.scale(p, -1))) - r;
