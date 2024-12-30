@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-Object::Object(ObjectData data):
-    data{ data }, 
+Object::Object(ObjectData data) :
+    data{ data },
     lastT{ 0 } {}
 
-float Object::SDF() { return 0; }
+float Object::SDF(vec a, vec b, float c) { return 0; }
 
 void Object::update(float f) {
     if (data.r.y - data.l1 <= -1.5) {
@@ -90,10 +90,9 @@ void Object::reset() {
     lastT = 0;
 }
 
-ObjectData *Object::getData() {
+ObjectData* Object::getData() {
     return &data;
 }
-
 
 float Sphere::SDF(vec p, vec c, float r) {
     return vOps.length(vOps.add(c, vOps.scale(p, -1))) - r;
