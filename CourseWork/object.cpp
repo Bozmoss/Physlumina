@@ -6,7 +6,7 @@ Object::Object(ObjectData data) :
     data{ data },
     lastT{ 0 } {}
 
-float Object::SDF(vec a, vec b, float c) { return 0; }
+float Object::SDF() { return 0; }
 
 void Object::update(float f) {
     if (data.r.y - data.l1 <= -1.5) {
@@ -17,27 +17,9 @@ void Object::update(float f) {
 }
 
 void Object::updateObject(float g, float r) {
-    /*if (data.floor) {
-        data.vel.y = 0.0f;
-        data.down = false;
-    }
-    if (!data.moving) {
-        if (data.down) {
-            data.vel.y -= g;
-            if (data.r.y - data.l1 < -1.5) {
-                data.r.y = -1.5 + data.l1;
-                if (!data.floor) {
-                    data.vel.y = -data.vel.y * r - r / 100.0;
-                }
-                if (abs(data.vel.y) <= 0.004) {
-                    data.floor = true;
-                }
-            }
-        }
-    }*/
     if (data.r.y - data.l1 <= -1.5) {
         data.r.y = data.l1 - 1.5;
-        if (vOps.length(data.vel) < 0.01f) {
+        if (vOps.length(data.vel) < 0.001f) {
             data.vel = { 0.0, 0.0, 0.0 };
         }
         else {
@@ -47,6 +29,7 @@ void Object::updateObject(float g, float r) {
             float j = -(1 + r) * velNorm * data.mass;
             vec impulse = vOps.scale(colNorm, j);
             data.vel = vOps.add(data.vel, vOps.scale(impulse, -1 / data.mass));
+            data.vel = vOps.add(data.vel, { 0.0, -0.001, 0.0 });
         }
     }
     else {
