@@ -40,7 +40,7 @@ int screen = 0, frameCount = 0;
 double prevTime = 0.0;
 float g = 0.0005, r = 0.7, f = 0.5, fps = 0.0f;
 const int bound = 10;
-std::vector<std::string> text;
+std::vector<std::string> text, matText;
 
 void mouse(GLFWwindow* window, double xpos, double ypos) {
     ImGuiIO& io = ImGui::GetIO();
@@ -62,7 +62,6 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 }
 
 void printObjectData(std::shared_ptr<Object>& o) {
-
     text.push_back("----------OBJECT----------");
     text.push_back("Type:             " + std::to_string(o->getData()->type));
     text.push_back("Material:         " + std::to_string(o->getData()->material));
@@ -74,6 +73,16 @@ void printObjectData(std::shared_ptr<Object>& o) {
     text.push_back("Floor:            " + std::to_string(o->getData()->floor));
 }
 
+void printMaterialData(Material& m) {
+    matText.push_back("----------MATERIAL----------");
+    matText.push_back("RGB Value:      " + std::to_string(m.r) + " " + std::to_string(m.g) + " " + std::to_string(m.b));
+    matText.push_back("Ambient:        " + std::to_string(m.Ka));
+    matText.push_back("Diffuse:        " + std::to_string(m.Kd));
+    matText.push_back("Specular:       " + std::to_string(m.Ks));
+    matText.push_back("Reflectiveness: " + std::to_string(m.Kr));
+    matText.push_back("Shininess:      " + std::to_string(m.c));
+}
+
 void update() {
     double currentTime = glfwGetTime();
     frameCount++;
@@ -83,9 +92,13 @@ void update() {
         prevTime = currentTime;
     }
     text.clear();
+    matText.clear();
     for (auto& o : objects) {
         o->updateObject(g, r);
         printObjectData(o);
+    }
+    for (auto& m : materials) {
+        printMaterialData(m);
     }
     int i = 0;
     for (auto& o : objects) {
@@ -144,10 +157,20 @@ int main(int argc, char** argv) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigDebugHighlightIdConflicts = false;
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 440");
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowRounding = 10.0f;
+    style.ChildRounding = 10.0f;
+    style.PopupRounding = 10.0f;
+    style.FrameRounding = 10.0f;
+    style.ScrollbarRounding = 10.0f;
+    style.GrabRounding = 10.0f;
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.12f, 0.12f, 1.0f);
 
     Shader vertexShader(Shader::Type::VERTEX, "./vertex.glsl");
     if (vertexShader.inError()) {
@@ -171,24 +194,25 @@ int main(int argc, char** argv) {
         {0.0, 0.8, 1.0}
     };
 
-    std::vector<std::vector<float>> lightCols = { //DEFAULT
+    std::vector<std::vector<float>> lightCols = { // DEFAULT
         {1.0, 1.0, 1.0},
         {1.0, 1.0, 1.0},
         {1.0, 1.0, 1.0}
     };
 
     materials = {
-    {1.0f, 1.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.2f, 32.0f},
-    {0.0f, 1.0f, 0.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
+    {0.0f, 1.0f, 0.0f, 0.2f, 0.7f, 0.5f, 0.0f, 0.0f}, // FLOOR
+    {1.0f, 0.0f, 0.0f, 0.2f, 0.7f, 0.5f, 0.0f, 16.0f},
+    {0.0f, 1.0f, 0.0f, 0.2f, 0.7f, 0.5f, 0.0f, 16.0f},
     {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.0f, 16.0f},
-    {0.0f, 0.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.4f, 32.0f},
+    {1.0f, 1.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.2f, 32.0f}
     };
 
     int r[4] = { rand() % 100, rand() % 100, rand() % 100, rand() % 100 };
 
     ObjectData objectDatas[] = {
-        {0, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.3, 1.0},
-        {0, 1, vec {r[2] / 100.0f, 0.5, r[3] / 100.0f}, 0.4, 1.0}
+        {0, 2, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.3, 1.0},
+        {0, 2, vec {r[2] / 100.0f, 0.5, r[3] / 100.0f}, 0.4, 1.0}
     };
 
     for (int i = 0; i < sizeof(objectDatas) / sizeof(objectDatas[0]); i++) {
@@ -245,7 +269,7 @@ int main(int argc, char** argv) {
         
         glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
 
-        gui.screenOne(window, objects, fps, g, text);
+        gui.screenOne(window, objects, materials, fps, g, text, matText);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

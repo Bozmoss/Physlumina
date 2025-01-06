@@ -107,7 +107,7 @@ vec3 translateSDF(vec3 p, vec3 t) {
 }
 
 SDF finalSDF(vec3 p, vec3 rd) {
-    SDF final = planeSDF(p, vec3(0.0, 1.0, 0.0), 1.5, 2);
+    SDF final = planeSDF(p, vec3(0.0, 1.0, 0.0), 1.5, 0);
     for (int i = 0; i < objectsL; i++) {
 
         if (!intersectsBoundingVolume(p, rd, vec3(objects[i].x, objects[i].y, objects[i].z), objects[i].l1)) {
@@ -206,7 +206,7 @@ vec3 sortCol(vec3 ro, vec3 rd, float maxDist) {
             vec3 Ia = vec3(1.0);
             vec3 surfaceC = getCol(Ia, materials[int(t.y)], lightCols, n, lights, view, pos);
 
-            if (int(t.y) == 2) {
+            if (int(t.y) == 0) {
                 surfaceC = checkerFloor(pos);
                 float Ff = clamp(1.0 - (length(pos - ro) / maxDist), 0.0, 1.0);
                 surfaceC = mix(c, surfaceC, Ff);
