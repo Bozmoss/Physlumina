@@ -172,7 +172,7 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         if (Begin("Objects", &addFlag)) {
             PushTextWrapPos();
             static float pos[3], radius, mass;
-            static int material;
+            static int material = 1;
             Text("Add a sphere to the scene");
             clampFloat(pos[0], -10.0, 10.0);
             clampFloat(pos[1], -10.0, 10.0);
