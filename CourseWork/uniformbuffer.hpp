@@ -1,11 +1,3 @@
-/*****************************************************************//**
- * \file   uniformbuffer.hpp
- * \brief  Buffer object for uniform blocks in GLSL shaders
- * 
- * \author Ben
- * \date   August 2024
- *********************************************************************/
-
 #pragma once
 
 #include <GL/glew.h>
@@ -22,10 +14,6 @@ private:
     GLuint m_handle;
     unsigned m_number;
 public:
-    /**
-     * Initialistation of the uniform buffer class
-     * 
-     */
     UniformBuffer();
 
     UniformBuffer(const UniformBuffer& other) = delete;
@@ -34,20 +22,8 @@ public:
 
     ~UniformBuffer();
 
-    /**
-     * Returns the handle of the buffer
-     * 
-     * \return GLuint
-     */
     GLuint handle() const;
 
-    /**
-     * Fills the buffer with data
-     * 
-     * \param vector<float> data
-     * \param Program p
-     * \param GLchar* name
-     */
     void fill(const std::vector<float>& data, Program& p, const GLchar* name) {
         m_number = data.size();
         glBindBuffer(GL_UNIFORM_BUFFER, m_handle);

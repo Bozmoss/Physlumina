@@ -37,10 +37,6 @@ void Object::updateObject(float g, float r) {
     }
 }
 
-bool Object::isClicked(std::vector<float> ro, std::vector<float> rd, float finalT) {
-    return false;
-}
-
 bool Object::checkCollision(Object& other) {
     if (this == &other) return false;
     float dist = vOps.length(vOps.add(data.r, vOps.scale(other.getData()->r, -1)));
@@ -79,27 +75,4 @@ ObjectData* Object::getData() {
 
 float Sphere::SDF(vec p, vec c, float r) {
     return vOps.length(vOps.add(c, vOps.scale(p, -1))) - r;
-}
-
-bool Sphere::isClicked(std::vector<float> ro, std::vector<float> rd, float finalT) {
-    float t = 0.0f;
-    for (int i = 0; i < 100; i++) {
-        vec p = {
-            ro.at(0) + t * rd.at(0),
-            ro.at(1) + t * rd.at(1),
-            ro.at(2) + t * rd.at(2)
-        };
-        float sdf = SDF(p, data.r, data.l1);
-        //std::cout << "SDF at t = " << t << ": " << sdf << "\n";
-        if (sdf < 0.001f && t < finalT) {
-            lastT = t;
-            return true;
-        }
-        t += sdf;
-        if (t > 100.0f) {
-            lastT = t;
-            break;
-        }
-    }
-    return false;
 }

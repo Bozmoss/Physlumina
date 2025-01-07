@@ -1,5 +1,3 @@
-//fragment shader
-
 #version 440 core
 #define lightsLen 100
 #define materialsLen 100

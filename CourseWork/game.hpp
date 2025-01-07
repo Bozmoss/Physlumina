@@ -1,11 +1,3 @@
-/*****************************************************************//**
- * \file   game.hpp
- * \brief  Game control elements
- * 
- * \author Ben
- * \date   August 2024
- *********************************************************************/
-
 #pragma once
 
 #include <GLFW/glfw3.h>

@@ -1,11 +1,3 @@
-/*****************************************************************//**
- * \file   main.cpp
- * \brief  3D rendering engine
- * 
- * \author Ben
- * \date   August 2024
- *********************************************************************/
-
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -53,11 +45,11 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwDestroyWindow(window);
     }
-    if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        int r[2] = { rand() % 100, rand() % 100 };
-        ObjectData o = { 0, 1, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.5, 1.0 };
-        auto s = std::make_shared<Sphere>(o);
-        objects.push_back(s);
+    if (key == GLFW_KEY_J && action == GLFW_PRESS) {
+        for (auto& o : objects) {
+            int r[3] = { (rand() % 201) - 100, rand() % 100, (rand() % 201) - 100 };
+            o->getData()->vel = vec{ r[0] / 5000.0f, r[1] / 2000.0f, r[2] / 5000.0f };
+        }
     }
 }
 
@@ -93,6 +85,12 @@ void update() {
     }
     text.clear();
     matText.clear();
+    objects.erase(std::remove_if(objects.begin(), objects.end(),
+        [](const std::shared_ptr<Object>& o) {
+            return abs(o->getData()->r.x) >= 8.5 || abs(o->getData()->r.z) >= 8.5;
+        }),
+        objects.end()
+    );
     for (auto& o : objects) {
         o->updateObject(g, r);
         printObjectData(o);
@@ -208,22 +206,6 @@ int main(int argc, char** argv) {
     {1.0f, 1.0f, 1.0f, 0.2f, 0.7f, 0.5f, 0.2f, 32.0f}
     };
 
-    int r[4] = { rand() % 100, rand() % 100, rand() % 100, rand() % 100 };
-
-    ObjectData objectDatas[] = {
-        {0, 2, vec {r[0] / 100.0f, 1.5, r[1] / 100.0f}, 0.3, 1.0},
-        {0, 2, vec {r[2] / 100.0f, 0.5, r[3] / 100.0f}, 0.4, 1.0}
-    };
-
-    for (int i = 0; i < sizeof(objectDatas) / sizeof(objectDatas[0]); i++) {
-        switch (objectDatas[i].type) {
-        case 0:
-            auto s = std::make_shared<Sphere>(objectDatas[i]);
-            objects.push_back(s);
-            break;
-        }
-    }
-
     FragVars fvs(res, game.getAX(), game.getAY(), lights, lightCols, materials, objects);
 
     std::vector<GLfloat> verts = {
@@ -269,7 +251,7 @@ int main(int argc, char** argv) {
         
         glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
 
-        gui.screenOne(window, objects, materials, fps, g, text, matText);
+        gui.screenOne(window, objects, materials, r, f, g, fps, text, matText, lights, lightCols);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -283,46 +265,3 @@ int main(int argc, char** argv) {
     glfwTerminate();
     return 0;
 }
-
-
-//while (!glfwWindowShouldClose(window)) {
-//    glfwPollEvents();
-//
-//    ImGui_ImplOpenGL3_NewFrame();
-//    ImGui_ImplGlfw_NewFrame();
-//    ImGui::NewFrame();
-//    switch (screen) {
-//    case 0:
-//        gui.mainMenu(screen);
-//        break;
-//    case 1:
-//        p.activate();
-//        update();
-//        updateObjectDatas();
-//
-//        fvs.update(p, game.getAX(), game.getAY(), materials, objects);
-//
-//        // Clear the screen
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//        glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
-//
-//        gui.screenOne(window, objects, fps, g, text);
-//        break;
-//    }
-//
-//    ImGui::Render();
-//    int display_w, display_h;
-//    glfwGetFramebufferSize(window, &display_w, &display_h);
-//    glViewport(0, 0, display_w, display_h);
-//    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-//
-//    glfwSwapBuffers(window);
-//}
-//
-//ImGui_ImplOpenGL3_Shutdown();
-//ImGui_ImplGlfw_Shutdown();
-//ImGui::DestroyContext();
-//glfwDestroyWindow(window);
-//glfwTerminate();
-//return 0;
