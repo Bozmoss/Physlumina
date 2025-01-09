@@ -187,9 +187,9 @@ int main(int argc, char** argv) {
     std::vector<float> res = { (float)mode->width, (float)mode->height, 1.0f };
 
     std::vector<std::vector<float>> lights = { //DEFAULT
-        {2.0, 0.6, 1.0},
-        {-2.0, 0.6, 1.0},
-        {0.0, 0.8, 1.0}
+        //{2.0, 2.0, 1.0},
+        //{-2.0, 2.0, 1.0},
+        {0.0, 2.0, 1.0}
     };
 
     std::vector<std::vector<float>> lightCols = { // DEFAULT

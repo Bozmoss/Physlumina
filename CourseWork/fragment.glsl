@@ -185,10 +185,21 @@ vec2 rayMarch(vec3 ro, vec3 rd, float maxDist) {
     return vec2(t, -1);
 }
 
-vec3 checkerFloor(vec3 p) {
+vec3 checkerFloor(vec3 p, vec3 n) {
     float scale = 1.0;
     int checker = int(floor(p.x * scale) + floor(p.z * scale)) % 2;
-    return (checker == 0) ? vec3(1.0) : vec3(0.0);
+    vec3 baseColor = (checker == 0) ? vec3(1.0) : vec3(0.0);
+    vec3 shadowColor = vec3(0.2);
+    for (int i = 0; i < lightsL; i++) {
+        vec3 lightDir = normalize(lights[i] - p);
+        float distToLight = length(lights[i] - p);
+
+        if (isInShadow(p + n * 0.01, lightDir, distToLight)) {
+            return mix(baseColor, shadowColor, 0.5);
+        }
+    }
+
+    return baseColor;
 }
 
 vec3 sortCol(vec3 ro, vec3 rd, float maxDist) {
@@ -205,7 +216,7 @@ vec3 sortCol(vec3 ro, vec3 rd, float maxDist) {
             vec3 surfaceC = getCol(Ia, materials[int(t.y)], lightCols, n, lights, view, pos);
 
             if (int(t.y) == 0) {
-                surfaceC = checkerFloor(pos);
+                surfaceC = checkerFloor(pos, vec3(0.0, 1.0, 0.0));
                 float Ff = clamp(1.0 - (length(pos - ro) / maxDist), 0.0, 1.0);
                 surfaceC = mix(c, surfaceC, Ff);
             }
