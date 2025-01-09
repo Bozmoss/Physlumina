@@ -14,7 +14,7 @@
 
 class GUI {
 private:
-    int width, height, actions[30], redo, current = 0;
+    int width, height;
     void clampFloat(float& f, float min, float max);
     std::string serializeMaterials(const std::vector<Material>& materials);
     std::string serializeObjects(const std::vector<std::shared_ptr<Object>>& objects);
