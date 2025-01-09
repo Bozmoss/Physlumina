@@ -15,9 +15,6 @@ Game::Game(std::vector<std::shared_ptr<Object>> &objects):
 void Game::mouseEvent(GLFWwindow* window, double xpos, double ypos, float g, float r) {
     float xoffset = 0, yoffset = 0;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-        for (auto& o : objects) {
-            o->reset();
-        }
         firstMouse = true;
         return;
     }

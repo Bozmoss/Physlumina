@@ -30,10 +30,6 @@ public:
 
     void resolveCollision(Object& other);
 
-    float getLastT();
-
-    void reset();
-
     ObjectData *getData();
 };
 

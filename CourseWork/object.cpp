@@ -61,14 +61,6 @@ void Object::resolveCollision(Object& other) {
     }
 }
 
-float Object::getLastT() {
-    return lastT;
-}
-
-void Object::reset() {
-    lastT = 0;
-}
-
 ObjectData* Object::getData() {
     return &data;
 }
