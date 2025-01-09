@@ -22,5 +22,5 @@ private:
     void deserialize(std::string data, std::vector<Material>& materials, std::vector<std::shared_ptr<Object>>& objects);
 public:
     GUI(int width, int height);
-    void screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, std::vector<Material>& materials, float &r, float &f, float &g, float fps, std::vector<std::string> tArr, std::vector<std::string> tMatArr, std::vector<std::vector<float>> lights, std::vector<std::vector<float>> lightCols);
+    void screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, std::vector<Material>& materials, float &r, float &f, float &g, float fps, std::vector<std::string> tArr, std::vector<std::string> tMatArr, std::vector<std::vector<float>>& lights, std::vector<std::vector<float>>& lightCols);
 };

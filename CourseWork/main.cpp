@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
         update();
         updateObjectDatas();
         
-        fvs.update(p, game.getAX(), game.getAY(), materials, objects);
+        fvs.update(p, game.getAX(), game.getAY(), materials, objects, lights, lightCols);
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         

@@ -41,6 +41,8 @@ std::string GUI::serializeScene(const std::vector<Material>& materials, const st
 }
 
 void GUI::deserialize(std::string data, std::vector<Material>& materials, std::vector<std::shared_ptr<Object>>& objects) {
+    materials.clear();
+    objects.clear();
     std::istringstream stream(data);
     std::string line;
     bool parsingMaterials = false, parsingObjects = false;
@@ -97,7 +99,7 @@ void GUI::deserialize(std::string data, std::vector<Material>& materials, std::v
     }
 }
 
-void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, std::vector<Material>& materials, float &r, float &f, float &g, float fps, std::vector<std::string> tArr, std::vector<std::string> tMatArr, std::vector<std::vector<float>> lights, std::vector<std::vector<float>> lightCols) {
+void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& objects, std::vector<Material>& materials, float &r, float &f, float &g, float fps, std::vector<std::string> tArr, std::vector<std::string> tMatArr, std::vector<std::vector<float>>& lights, std::vector<std::vector<float>>& lightCols) {
     static bool debugFlag = false, addFlag = false, materialsFlag = false, newMaterialFlag = false, controlsFlag = false, saveFlag = false, loadFlag = false, constantsFlag = false, lightsFlag = false, newLightFlag = false;
     static std::vector<std::string> files;
     static int index = -1;
@@ -159,7 +161,6 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         if (Begin("Debug", &debugFlag)) {
             PushTextWrapPos();
             Text("FPS: %.2f", fps);
-            Text("Gravity: %.2f", g);
             for (const auto& text : tArr) {
                 BulletText("%s", text.c_str());
             }
@@ -274,7 +275,7 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
     }
     if (loadFlag) {
         SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing);
-        if (Begin("Load")) {
+        if (Begin("Load", &loadFlag)) {
             PushTextWrapPos();
             if (!files.empty()) {
                 Combo("Select file", &index, files.data()->c_str(), files.size());
@@ -293,7 +294,7 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
     }
     if (constantsFlag) {
         SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing);
-        if (Begin("Constants"), &constantsFlag) {
+        if (Begin("Constants", &constantsFlag)) {
             PushTextWrapPos();
             InputFloat("Gravity", &G);
             clampFloat(G, 0.0, 30.0);
@@ -308,7 +309,7 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
     }
     if (lightsFlag) {
         SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing);
-        if (Begin("Lights"), &lightsFlag) {
+        if (Begin("Lights", &lightsFlag)) {
             PushTextWrapPos();
             for (int i = 0; i < lights.size(); i++) {
                 std::string s1 = "Position: " + std::to_string(lights.at(i).at(0)) + " " + std::to_string(lights.at(i).at(1)) + " " + std::to_string(lights.at(i).at(2));
@@ -326,8 +327,8 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         }
         End();
         if (newLightFlag) {
-            SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing);
-            if (Begin("New Light"), &newLightFlag) {
+            SetNextWindowSize(ImVec2(400, 600), ImGuiCond_Appearing);
+            if (Begin("New Light", &newLightFlag)) {
                 PushTextWrapPos();
                 static float col[3], pos[3];
                 ColorPicker3("Colour", col);

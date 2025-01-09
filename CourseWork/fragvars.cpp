@@ -23,11 +23,13 @@ void FragVars::init(Program &p) {
     objectsLLocation = glGetUniformLocation(p.handle(), "objectsL");
     time = std::chrono::high_resolution_clock::now();
 }
-void FragVars::update(Program& p, const float &aX, const float &aY, std::vector<Material> materials, std::vector<std::shared_ptr<Object>>& objects) {
+void FragVars::update(Program& p, const float &aX, const float &aY, std::vector<Material> materials, std::vector<std::shared_ptr<Object>>& objects, std::vector<std::vector<float>>& lights, std::vector<std::vector<float>>& lightCols) {
     this->materials = materials;
     this->objects = objects;
     this->aX = aX;
     this->aY = aY;
+    this->lights = lights;
+    this->lightCols = lightCols;
     materialObjectDataUpdate(p);
     glUniform3f(resLocation, res.at(0), res.at(1), res.at(2));
     glUniform1f(aXLocation, this->aX);

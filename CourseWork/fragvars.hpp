@@ -29,5 +29,5 @@ public:
 
     void init(Program &p);
 
-    void update(Program& p, const float &aX, const float &aY, std::vector<Material> materials, std::vector<std::shared_ptr<Object>>& objects);
+    void update(Program& p, const float &aX, const float &aY, std::vector<Material> materials, std::vector<std::shared_ptr<Object>>& objects, std::vector<std::vector<float>>& lights, std::vector<std::vector<float>>& lightCols);
 };
