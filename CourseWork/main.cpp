@@ -192,8 +192,6 @@ int main(int argc, char** argv) {
 
     std::vector<std::vector<float>> lightCols = { // DEFAULT
         {1.0, 1.0, 1.0},
-        {1.0, 1.0, 1.0},
-        {1.0, 1.0, 1.0}
     };
 
     materials = {
