@@ -3,8 +3,7 @@
 #include <iostream>
 
 Object::Object(ObjectData data) :
-    data{ data },
-    lastT{ 0 } {}
+    data{ data }{}
 
 float Object::SDF() { return 0; }
 

@@ -15,7 +15,6 @@ struct ObjectData {
 class Object {
 protected:
     ObjectData data;
-    float lastT;
     VecOps vOps;
 
     float SDF();
