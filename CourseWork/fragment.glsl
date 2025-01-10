@@ -54,11 +54,6 @@ SDF sphereSDF(vec3 p, vec3 c, float r, int i) {
     return SDF(length(c-p) - r, i);
 }
 
-SDF torusSDF(vec3 p, vec2 t, int i) {
-    vec2 q = vec2(length(p.xz)-t.x,p.y);
-    return SDF(length(q)-t.y, i);
-}
-
 SDF planeSDF(vec3 p, vec3 n, float h, int i) {
   return SDF(dot(p, n) + h, i);
 }
