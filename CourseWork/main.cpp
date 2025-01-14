@@ -28,7 +28,7 @@
 std::vector<Material> materials;
 std::vector<std::shared_ptr<Object>> objects;
 Game game(objects);
-int screen = 0, frameCount = 0;
+int frameCount = 0;
 double prevTime = 0.0;
 float g = 0.0005, r = 0.7, f = 0.5, fps = 0.0f;
 const int bound = 10;
