@@ -113,9 +113,6 @@ SDF finalSDF(vec3 p, vec3 rd) {
                 temp = sphereSDF(p, vec3(objects[i].x, objects[i].y, objects[i].z), objects[i].l1, int(objects[i].material));
                 break;
             case 1:
-                temp = torusSDF(p, vec2(objects[i].x, objects[i].y), int(objects[i].material));
-                break;
-            case 2:
                 temp = planeSDF(p, vec3(objects[i].x, objects[i].y, objects[i].z), objects[i].l1, int(objects[i].material));
                 break;
         };
