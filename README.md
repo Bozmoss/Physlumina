@@ -43,9 +43,13 @@ Adjust material attributes such as color, reflectivity, and texture in real-time
 
 Enable physics simulations to observe realistic object interactions.
 
+### Documentation:
+
+- See the Documentation PDF for an in-depth description of how this works.
+
 ### Contributing:
 
-We currently request no contributions until further notice.
+- We currently request no contributions until further notice.
 
 ### License:
 
