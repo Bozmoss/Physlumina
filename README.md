@@ -1,8 +1,8 @@
-Physlumina is an OpenGL-based real-time ray tracing engine inspired by Blender's rendering techniques. It allows users to create and manipulate 3D environments, add objects, and adjust their material properties in real-time, incorporating physics simulations for enhanced realism.
+Physlumina is an OpenGL-based real-time raymarching engine inspired by Blender's rendering techniques. It allows users to create and manipulate 3D environments, add objects, and adjust their material properties in real-time, incorporating physics simulations for enhanced realism.
 
 ### Features:
 
-- Real-Time Ray Tracing: Experience dynamic rendering with real-time ray tracing capabilities.
+- Real-Time Raymarching: Experience dynamic rendering with real-time raymarching capabilities.
 
 - Object-Oriented Design: Utilize classes such as buffer objects for efficient data handling, vertex objects for precise polygon rendering, and variable handlers for dynamic adjustments.
 
