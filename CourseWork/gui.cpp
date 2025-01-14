@@ -197,8 +197,8 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
             if (Button("Clear all")) {
                 objects.clear();
             }
+            PopTextWrapPos();
         }
-        PopTextWrapPos();
         End();
     }
     if (materialsFlag) {

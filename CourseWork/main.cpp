@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "OpenGL", glfwGetPrimaryMonitor(), NULL);
+    GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "OpenGl", glfwGetPrimaryMonitor(), NULL);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
