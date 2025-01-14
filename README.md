@@ -13,7 +13,6 @@ Physlumina is an OpenGL-based real-time raymarching engine inspired by Blender's
 1. Clone the Repository:
 
 ```bash
-Copy code
 git clone https://github.com/Bozmoss/Physlumina.git
 ```
 
