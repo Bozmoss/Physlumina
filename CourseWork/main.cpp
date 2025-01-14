@@ -31,7 +31,6 @@ Game game(objects);
 int frameCount = 0;
 double prevTime = 0.0;
 float g = 0.0005, r = 0.7, f = 0.5, fps = 0.0f;
-const int bound = 10;
 std::vector<std::string> text, matText;
 
 void mouse(GLFWwindow* window, double xpos, double ypos) {
