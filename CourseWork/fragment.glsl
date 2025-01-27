@@ -180,8 +180,8 @@ vec2 rayMarch(vec3 ro, vec3 rd, float maxDist) {
 vec3 checkerFloor(vec3 p, vec3 n) {
     float scale = 1.0;
     int checker = int(floor(p.x * scale) + floor(p.z * scale)) % 2;
-    vec3 baseColor = (checker == 0) ? vec3(1.0) : vec3(0.0);
-    vec3 shadowColor = vec3(0.2);
+    vec3 baseColor = (checker == 0) ? vec3(118.0f /  255.0f, 150.0f / 255.0f, 86.0f / 255.0f) : vec3(238.0f / 255.0f, 238.0f / 255.0f, 210.0f / 255.0f);
+    vec3 shadowColor = vec3(0.5);
     for (int i = 0; i < lightsL; i++) {
         vec3 lightDir = normalize(lights[i] - p);
         float distToLight = length(lights[i] - p);

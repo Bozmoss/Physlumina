@@ -186,7 +186,8 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
             clampFloat(mass, 0.1, 50.0);
             SliderInt("Material", &material, 1, materials.size()-1); // Offset for user experience
             if (Button("Create") && material != 0) {
-                int r[2] = { rand() % 1000, rand() % 1000 };
+                /*int r[2] = { rand() % 1000, rand() % 1000 };*/
+                int r[2] = { 0, 0 };
                 ObjectData o = { 0, material, vec {pos[0] + r[0] / 100000.0f, pos[1], pos[2] + r[1] / 100000.0f}, radius, mass };
                 auto s = std::make_shared<Sphere>(o);
                 objects.push_back(s);

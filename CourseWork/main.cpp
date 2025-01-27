@@ -230,6 +230,7 @@ int main(int argc, char** argv) {
     GUI gui(mode->width, mode->height);
 
     while (!glfwWindowShouldClose(window)) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glfwPollEvents();
 
         ImGui_ImplOpenGL3_NewFrame();
@@ -241,8 +242,6 @@ int main(int argc, char** argv) {
         updateObjectDatas();
         
         fvs.update(p, game.getAX(), game.getAY(), materials, objects, lights, lightCols);
-        
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glDrawElements(GL_TRIANGLES, iB.number(), GL_UNSIGNED_INT, nullptr);
 
