@@ -21,7 +21,7 @@ protected:
 public:
     Object(ObjectData data);
 
-    void update(float f);
+    void update(float f, float dt);
 
     void updateObject(float g, float r);
 

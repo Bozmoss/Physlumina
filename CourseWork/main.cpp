@@ -30,7 +30,7 @@ std::vector<std::shared_ptr<Object>> objects;
 Game game(objects);
 int frameCount = 0;
 double prevTime = 0.0;
-float g = 0.0005, r = 0.7, f = 0.5, fps = 0.0f;
+float g = 0.05, r = 0.7, f = 0.5, fps = 0.0f;
 std::vector<std::string> text, matText;
 
 void mouse(GLFWwindow* window, double xpos, double ypos) {
@@ -47,7 +47,7 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_J && action == GLFW_PRESS) {
         for (auto& o : objects) {
             int r[3] = { (rand() % 201) - 100, rand() % 100, (rand() % 201) - 100 };
-            o->getData()->vel = vec{ r[0] / 5000.0f, r[1] / 2000.0f, r[2] / 5000.0f };
+            o->getData()->vel = vec{ r[0] / 100.0f, r[1] / 40.0f, r[2] / 40.0f };
         }
     }
 }
@@ -107,9 +107,9 @@ void update() {
     }
 }
 
-void updateObjectDatas() {
+void updateObjectDatas(float dt) {
     for (auto& o : objects) {
-        o->update(f);
+        o->update(f, dt);
     }
     game.updateObjects(objects);
 }
@@ -229,6 +229,9 @@ int main(int argc, char** argv) {
 
     GUI gui(mode->width, mode->height);
 
+
+    double lastFrameTime = glfwGetTime();
+
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glfwPollEvents();
@@ -239,7 +242,12 @@ int main(int argc, char** argv) {
 
         p.activate();
         update();
-        updateObjectDatas();
+
+        double currentFrameTime = glfwGetTime();
+        double deltaTime = currentFrameTime - lastFrameTime;
+        lastFrameTime = currentFrameTime;
+
+        updateObjectDatas(deltaTime);
         
         fvs.update(p, game.getAX(), game.getAY(), materials, objects, lights, lightCols);
         

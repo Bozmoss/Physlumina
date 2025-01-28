@@ -108,12 +108,11 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         if (BeginMenu("File")) {
             if (MenuItem("Open")) {
                 loadFlag = true;
-                if (files.empty()) {
-                    for (const auto& entry : fs::directory_iterator(".")) {
-                        if (entry.is_regular_file() && entry.path().extension() == ".txt") {
-                            std::string s = entry.path().filename().string();
-                            files.push_back(s);
-                        }
+                files.clear();
+                for (const auto& entry : fs::directory_iterator(".")) {
+                    if (entry.is_regular_file() && entry.path().extension() == ".txt") {
+                        std::string s = entry.path().filename().string();
+                        files.push_back(s);
                     }
                 }
             }
@@ -155,7 +154,6 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         EndMainMenuBar();
     }
 
-    // Rendering other GUI elements or application-specific logic
     if (debugFlag) {
         SetNextWindowSize(ImVec2(400, 200), ImGuiCond_Appearing);
         if (Begin("Debug", &debugFlag)) {
@@ -279,7 +277,13 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
         if (Begin("Load", &loadFlag)) {
             PushTextWrapPos();
             if (!files.empty()) {
-                Combo("Select file", &index, files.data()->c_str(), files.size());
+                std::vector<const char*> fileNames;
+                for (const auto& file : files) {
+                    fileNames.push_back(file.c_str());
+                }
+
+                Combo("Select file", &index, fileNames.data(), fileNames.size());
+
                 if (Button("Load") && index != -1) {
                     FileHandler f(files[index].c_str());
                     std::string data = f.readFile();

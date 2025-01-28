@@ -7,12 +7,12 @@ Object::Object(ObjectData data) :
 
 float Object::SDF() { return 0; }
 
-void Object::update(float f) {
+void Object::update(float f, float dt) {
     if (data.r.y - data.l1 <= -1.5) {
         data.vel.x *= f;
         data.vel.z *= f;
     }
-    data.r = vOps.add(data.r, data.vel);
+    data.r = vOps.add(data.r, vOps.scale(data.vel, dt));
 }
 
 void Object::updateObject(float g, float r) {
