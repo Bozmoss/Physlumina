@@ -30,7 +30,7 @@ std::vector<std::shared_ptr<Object>> objects;
 Game game(objects);
 int frameCount = 0;
 double prevTime = 0.0;
-float g = 0.05, r = 0.7, f = 0.5, fps = 0.0f;
+float g = 4, r = 0.7, f = 0.5, fps = 0.0f;
 std::vector<std::string> text, matText;
 
 void mouse(GLFWwindow* window, double xpos, double ypos) {
@@ -74,7 +74,7 @@ void printMaterialData(Material& m) {
     matText.push_back("Shininess:      " + std::to_string(m.c));
 }
 
-void update() {
+void update(float eTime, float dt) {
     double currentTime = glfwGetTime();
     frameCount++;
     if (currentTime - prevTime >= 1.0) {
@@ -91,7 +91,7 @@ void update() {
         objects.end()
     );
     for (auto& o : objects) {
-        o->updateObject(g, r);
+        o->updateObject(g, r, eTime, dt);
         printObjectData(o);
     }
     for (auto& m : materials) {
@@ -229,8 +229,7 @@ int main(int argc, char** argv) {
 
     GUI gui(mode->width, mode->height);
 
-
-    double lastFrameTime = glfwGetTime();
+    double lastFrameTime = glfwGetTime(), initalTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -241,11 +240,12 @@ int main(int argc, char** argv) {
         ImGui::NewFrame();
 
         p.activate();
-        update();
 
         double currentFrameTime = glfwGetTime();
         double deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
+
+        update(currentFrameTime - initalTime, deltaTime);
 
         updateObjectDatas(deltaTime);
         

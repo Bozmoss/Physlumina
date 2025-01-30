@@ -17,6 +17,7 @@ class Object {
 protected:
     ObjectData data;
     VecOps vOps;
+    float eTime1;
 
     float SDF();
 public:
@@ -24,7 +25,7 @@ public:
 
     void update(float f, float dt);
 
-    void updateObject(float g, float r);
+    void updateObject(float g, float r, float elapsedTime, float dt);
 
     bool checkCollision(Object& other);
 
