@@ -9,8 +9,8 @@ float Object::SDF() { return 0; }
 
 void Object::update(float f, float dt) {
     if (data.r.y - data.l1 <= -1.5) {
-        data.vel.x *= f;
-        data.vel.z *= f;
+        data.vel.x *= 1 - f;
+        data.vel.z *= 1 - f;
     }
     data.r = vOps.add(data.r, vOps.scale(data.vel, dt));
 }
@@ -19,7 +19,7 @@ void Object::updateObject(float g, float r) {
     if (data.r.y - data.l1 <= -1.5) {
         data.r.y = data.l1 - 1.5;
         if (trunc(100 * vOps.length(data.vel)) == trunc(100 * data.lastBounceSpeed)) {
-            data.vel = { 0.0, 0.0, 0.0 };
+            data.vel.y = 0;
         }
         else {
             data.lastBounceSpeed = vOps.length(data.vel);
