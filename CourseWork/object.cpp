@@ -18,10 +18,11 @@ void Object::update(float f, float dt) {
 void Object::updateObject(float g, float r) {
     if (data.r.y - data.l1 <= -1.5) {
         data.r.y = data.l1 - 1.5;
-        if (vOps.length(data.vel) < 0.001f) {
+        if (trunc(100 * vOps.length(data.vel)) == trunc(100 * data.lastBounceSpeed)) {
             data.vel = { 0.0, 0.0, 0.0 };
         }
         else {
+            data.lastBounceSpeed = vOps.length(data.vel);
             vec colNorm = vOps.normalise(vec{ 0.0, data.r.y, 0.0 });
             vec relVel = vOps.scale(data.vel, -1);
             float velNorm = vOps.dot(relVel, colNorm);

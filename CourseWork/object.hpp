@@ -10,6 +10,7 @@ struct ObjectData {
     float l1, mass;
     vec vel, impulse;
     bool down = true, moving = false, floor = false;
+    float lastBounceSpeed;
 };
 
 class Object {

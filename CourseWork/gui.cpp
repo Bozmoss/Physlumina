@@ -303,7 +303,7 @@ void GUI::screenOne(GLFWwindow* window, std::vector<std::shared_ptr<Object>>& ob
             PushTextWrapPos();
             InputFloat("Gravity", &G);
             clampFloat(G, 0.0, 30.0);
-            g = G * (0.0005 / 9.81);
+            g = G * (0.05 / 9.81);
             InputFloat("Restitution", &r);
             clampFloat(r, 0.0, 1.0);
             InputFloat("Friction", &f);
