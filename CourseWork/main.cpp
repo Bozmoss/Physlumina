@@ -74,7 +74,7 @@ void printMaterialData(Material& m) {
     matText.push_back("Shininess:      " + std::to_string(m.c));
 }
 
-void update(float eTime, float dt) {
+void update(float dt) {
     double currentTime = glfwGetTime();
     frameCount++;
     if (currentTime - prevTime >= 1.0) {
@@ -91,7 +91,7 @@ void update(float eTime, float dt) {
         objects.end()
     );
     for (auto& o : objects) {
-        o->updateObject(g, r, eTime, dt);
+        o->updateObject(g, r, dt);
         printObjectData(o);
     }
     for (auto& m : materials) {
@@ -229,7 +229,7 @@ int main(int argc, char** argv) {
 
     GUI gui(mode->width, mode->height);
 
-    double lastFrameTime = glfwGetTime(), initalTime = glfwGetTime();
+    double lastFrameTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
         double deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
 
-        update(currentFrameTime - initalTime, deltaTime);
+        update(deltaTime);
 
         updateObjectDatas(deltaTime);
         

@@ -15,17 +15,9 @@ void Object::update(float f, float dt) {
     data.r = vOps.add(data.r, vOps.scale(data.vel, dt));
 }
 
-void Object::updateObject(float g, float r, float elapsedTime, float dt) {
-    if (data.vel.y == 0 && data.r.y - data.l1 > -1.5f) {
-        eTime1 = elapsedTime;
-    }
+void Object::updateObject(float g, float r, float dt) {
     if (data.r.y - data.l1 <= -1.5) {
         data.r.y = data.l1 - 1.5;
-
-        if (eTime1 > 0) {
-            float fallTime = elapsedTime - eTime1;
-            std::cout << "Time from max height to ground: " << fallTime << " seconds\n";
-        }
 
         if (trunc(100 * vOps.length(data.vel)) == trunc(100 * data.lastBounceSpeed)) {
             data.vel.y = 0;
