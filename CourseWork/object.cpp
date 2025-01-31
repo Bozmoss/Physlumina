@@ -35,7 +35,6 @@ void Object::updateObject(float g, float r, float dt) {
     }
     else {
         data.vel.y -= g * dt;
-        std::cout << dt << std::endl;
     }
 }
 
@@ -58,9 +57,6 @@ void Object::resolveCollision(Object& other) {
     data.impulse = vOps.scale(impulse, -1);
     other.getData()->vel = vOps.add(other.getData()->vel, vOps.scale(impulse, 1 / other.getData()->mass));
     other.getData()->impulse = impulse;
-    if (other.getData()->floor) {
-        other.getData()->vel = vOps.scale(other.getData()->vel, -1);
-    }
 }
 
 ObjectData* Object::getData() {
