@@ -62,3 +62,7 @@ Enable physics simulations to observe realistic object interactions.
 - Utilizes OpenGL for graphics rendering.
 
 - Utilizes Dear ImGui for the user interface.
+
+### Related videos:
+
+- https://youtu.be/ktiEpQe9pSY?si=hkQcHW8OjUhpiHFw
