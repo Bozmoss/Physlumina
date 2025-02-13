@@ -30,6 +30,7 @@ git clone https://github.com/Bozmoss/Physlumina.git
 
 - Download the latest x64 release from the tags section. You want the zip file that begins with `vx.y.z`.
 - x86 is not currently supported.
+- If you have visual studio, it is much easier to clone into visual studio, and run it on release x64.
 
 ### Usage:
 
